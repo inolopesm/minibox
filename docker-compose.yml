@@ -18,5 +18,6 @@ services:
     volumes:
       - ./pages:/home/node/app/pages
       - ./utils:/home/node/app/utils
+      - ./styles:/home/node/app/styles
     depends_on:
       - db

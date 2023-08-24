@@ -13,3 +13,6 @@ RUN npm ci
 
 COPY --chown=node:node knexfile.js .
 COPY --chown=node:node migrations/ migrations/
+
+COPY --chown=node:node tailwind.config.js .
+COPY --chown=node:node postcss.config.js .
