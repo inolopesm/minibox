@@ -1,4 +1,8 @@
 import { useState } from "react";
+import Head from "next/head";
+import { TextField } from "../components/TextField";
+import { Button } from "../components/Button";
+import { Alert } from "../components/Alert";
 import { HttpClient } from "../utils/HttpClient";
 
 export function getServerSideProps(context) {
@@ -33,14 +37,42 @@ export default function LoginPage() {
   }
 
   return (
-    <div>
-      <div>Login Page</div>
-      <form onSubmit={handleSubmit}>
-        {error && <div>{error.message}</div>}
-        <input name="username" disabled={loading} />
-        <input name="password" disabled={loading} />
-        <button type="submit" disabled={loading}>Entrar</button>
-      </form>
-    </div>
+    <>
+      <Head>
+        <title>Acesse a plataforma | Minibox</title>
+      </Head>
+      <div className="bg-gray-100 min-h-screen py-10">
+        <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
+          <div className="font-bold mb-4 text-gray-900 text-xl">
+            Acesse a plataforma
+          </div>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit}
+          >
+            {error && (
+              <Alert variant="error" onClose={() => setError(null)}>
+                {error.message}
+              </Alert>
+            )}
+            <TextField
+              label="Usuário"
+              type="text"
+              name="username"
+              disabled={loading}
+            />
+            <TextField
+              label="Senha"
+              type="password"
+              name="password"
+              disabled={loading}
+            />
+            <Button type="submit" disabled={loading}>
+              Entrar
+            </Button>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }
