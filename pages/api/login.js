@@ -1,8 +1,10 @@
 import crypto from "node:crypto";
 import knex from "knex";
+import { Time } from "../../utils/Time";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
+    await Time.sleep(2500);
     const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
 
     try {
@@ -16,7 +18,7 @@ export default async function handler(req, res) {
       if (!user || user.password !== password) {
         return res
           .status(400)
-          .json({ message: "Credenciais informadas são inválidas" });
+          .json({ message: "Usuário e/ou senha inválido(s)" });
       }
 
       const accessToken = crypto.randomBytes(127).toString("hex");
