@@ -19,5 +19,7 @@ services:
       - ./pages:/home/node/app/pages
       - ./utils:/home/node/app/utils
       - ./styles:/home/node/app/styles
+      - ./components:/home/node/app/components
+      - ./public:/home/node/app/public
     depends_on:
       - db
