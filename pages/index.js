@@ -1,6 +1,6 @@
 export function getServerSideProps(context) {
   if (!context.req.cookies.accessToken) {
-    return { redirect: { destination: "/login", permanent: false } };
+    return { redirect: { destination: "/signin", permanent: false } };
   }
 
   return { props: {} };

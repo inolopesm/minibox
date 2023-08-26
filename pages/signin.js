@@ -13,7 +13,7 @@ export function getServerSideProps(context) {
   return { props: {} };
 }
 
-export default function LoginPage() {
+export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,7 +30,7 @@ export default function LoginPage() {
     setLoading(true);
 
     HttpClient
-      .post("/api/login", { data: Object.fromEntries(new FormData(event.target)) })
+      .post("/api/signin", { data: Object.fromEntries(new FormData(event.target)) })
       .then((response) => handleSuccess(response))
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
