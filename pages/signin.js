@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
@@ -16,6 +17,8 @@ export function getServerSideProps(context) {
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (error) {
@@ -30,6 +33,8 @@ export default function SignInPage() {
       cookie.push("path=/");
       if (process.env.NODE_ENV === "production") cookie.push("Secure");
       document.cookie = cookie.join("; ");
+      setSuccess(true);
+      router.push("/");
     }
 
     event.preventDefault();
@@ -62,19 +67,24 @@ export default function SignInPage() {
                 {error.message}
               </Alert>
             )}
+            {success && (
+              <Alert variant="success">
+                Login realizado com sucesso. Redirecionando para a plataforma.
+              </Alert>
+            )}
             <TextField
               label="Usuário"
               type="text"
               name="username"
-              disabled={loading}
+              disabled={loading || success}
             />
             <TextField
               label="Senha"
               type="password"
               name="password"
-              disabled={loading}
+              disabled={loading || success}
             />
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading || success}>
               Entrar
             </Button>
           </form>
