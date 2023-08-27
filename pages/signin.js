@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
@@ -16,6 +16,12 @@ export function getServerSideProps(context) {
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      window.scroll({ left: 0, top: 0 });
+    }
+  }, [error]);
 
   function handleSubmit(event) {
     function handleSuccess(response) {
