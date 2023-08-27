@@ -19,7 +19,7 @@ export default async function signInHandler(req, res) {
         .count({ count: "*" })
         .where({ username });
 
-      if (parseInt(count, 10)) {
+      if (count === "1") {
         return res
           .status(400)
           .json({ message: "Já existe um usuário com este nome" });
