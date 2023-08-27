@@ -16,6 +16,8 @@ export async function getServerSideProps(context) {
 
     if (count === "0") {
       return { redirect: { destination: "/signin", permanent: false } };
+    } else {
+      context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
     }
   } finally {
     await db.destroy();

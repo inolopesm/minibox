@@ -2,14 +2,31 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import knex from "knex";
 import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { HttpClient } from "../utils/HttpClient";
 
-export function getServerSideProps(context) {
-  if (context.req.cookies.accessToken) {
-    return { redirect: { destination: "/", permanent: false } };
+export async function getServerSideProps(context) {
+  const { accessToken } = context.req.cookies;
+
+  if (accessToken) {
+    const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
+
+    try {
+      const [{ count }] = await db("User")
+        .count({ count: "*" })
+        .where({ accessToken });
+
+      if (count === "1") {
+        return { redirect: { destination: "/", permanent: false } };
+      } else {
+        context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
+      }
+    } finally {
+      await db.destroy();
+    }
   }
 
   return { props: {} };
