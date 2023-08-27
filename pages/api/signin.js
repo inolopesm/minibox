@@ -23,7 +23,9 @@ export default async function signInHandler(req, res) {
 
       const accessToken = crypto.randomBytes(127).toString("hex");
 
-      await db("User").update({ accessToken }).where({ username });
+      await db("User")
+        .update({ accessToken, loggedAt: Date.now() })
+        .where({ username });
 
       return res.status(200).json({ accessToken });
     } finally {
