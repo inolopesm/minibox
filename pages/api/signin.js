@@ -25,7 +25,7 @@ export default async function signInHandler(req, res) {
 
       await db("User").update({ accessToken }).where({ username });
 
-      return { accessToken };
+      return res.status(200).json({ accessToken });
     } finally {
       await db.destroy();
     }
