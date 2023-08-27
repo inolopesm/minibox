@@ -34,6 +34,7 @@ export default function SignInPage() {
 
     event.preventDefault();
     setLoading(true);
+    setError(null);
 
     HttpClient
       .post("/api/signin", { data: Object.fromEntries(new FormData(event.target)) })
