@@ -1,19 +1,19 @@
 export const HttpClient = {
-  async request(url, options = {}) {
+  async request(url, { method, data, accessToken } = {}) {
     try {
       const init = { headers: new Headers() };
 
-      if (options.method) {
-        init.method = options.method;
+      if (method) {
+        init.method = method;
       }
 
-      if (options.data) {
+      if (data) {
         init.headers.set("content-type", "application/json");
-        init.body = JSON.stringify(options.data);
+        init.body = JSON.stringify(data);
       }
 
-      if (options.accessToken) {
-        init.headers.set("x-access-token", options.accessToken);
+      if (accessToken) {
+        init.headers.set("x-access-token", accessToken);
       }
 
       const controller = new AbortController();
@@ -25,17 +25,17 @@ export const HttpClient = {
 
       const contentType = response.headers.get("content-type");
       const json = !!contentType && contentType.includes("json");
-      const data = json ? await response.json() : null;
+      const body = json ? await response.json() : null;
 
       if (!response.ok) {
-        if (data?.message) {
-          throw new Error(data.message);
+        if (body?.message) {
+          throw new Error(body.message);
         }
 
         throw new Error(`Request failed with status code ${response.status}`);
       }
 
-      return { data };
+      return { data: body };
     } catch (error) {
       if (error?.name === "AbortError") {
         throw new Error("Timeout error");
@@ -45,7 +45,8 @@ export const HttpClient = {
     }
   },
 
-  post(url, options = {}) {
+  post(url, { method, data, accessToken } = {}) {
+    const options = { method, data, accessToken };
     return HttpClient.request(url, { method: "POST", ...options });
   },
 };
