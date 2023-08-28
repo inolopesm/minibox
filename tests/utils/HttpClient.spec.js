@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { HttpClient } from "./HttpClient";
+import { HttpClient } from "../../utils/HttpClient";
 
 describe("HttpClient", () => {
   // https://github.com/jestjs/jest/issues/13834

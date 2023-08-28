@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { ClassNames } from "./ClassNames";
+import { ClassNames } from "../../utils/ClassNames";
 
 describe("ClassNames", () => {
   describe("add", () => {

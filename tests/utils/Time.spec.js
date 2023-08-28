@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { Time } from "./Time";
+import { Time } from "../../utils/Time";
 
 describe("Time", () => {
   describe("sleep", () => {
