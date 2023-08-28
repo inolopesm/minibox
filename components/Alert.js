@@ -1,4 +1,4 @@
-import { ClassNames } from "../../utils/ClassNames";
+import { ClassNames } from "../utils/ClassNames";
 
 export function Alert({ variant, onClose, children }) {
   return (
