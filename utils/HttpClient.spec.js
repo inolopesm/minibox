@@ -1,10 +1,14 @@
-import { describe, expect, it, jest } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
 import { HttpClient } from "./HttpClient";
 
 describe("HttpClient", () => {
+  // https://github.com/jestjs/jest/issues/13834
+  beforeAll(() => { window.fetch = () => Promise.reject(new Error("Please mock fetch")); });
+  afterAll(() => { Reflect.deleteProperty(window, "fetch"); });
+
   describe("request", () => {
     it("should make a GET request and return the response data", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: true,
         headers: new Headers({ "content-type": "application/json" }),
         json: () => Promise.resolve({ message: "success" }),
@@ -12,7 +16,7 @@ describe("HttpClient", () => {
 
       const controller = new AbortController();
 
-      jest.spyOn(global, "AbortController").mockImplementation(() => controller);
+      jest.spyOn(window, "AbortController").mockImplementation(() => controller);
 
       const response = await HttpClient.request("https://example.com");
 
@@ -28,18 +32,18 @@ describe("HttpClient", () => {
     });
 
     it("should make a request with custom method", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: true,
         headers: new Headers(),
       });
 
       const controller = new AbortController();
 
-      jest.spyOn(global, "AbortController").mockImplementation(() => controller);
+      jest.spyOn(window, "AbortController").mockImplementation(() => controller);
 
       await HttpClient.request("https://example.com", { method: "POST" });
 
-      expect(global.fetch).toHaveBeenCalledWith("https://example.com", {
+      expect(fetch).toHaveBeenCalledWith("https://example.com", {
         method: "POST",
         headers: new Headers(),
         signal: controller.signal,
@@ -50,21 +54,21 @@ describe("HttpClient", () => {
     });
 
     it("should make a request with json data", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: true,
         headers: new Headers(),
       });
 
       const controller = new AbortController();
 
-      jest.spyOn(global, "AbortController").mockImplementation(() => controller);
+      jest.spyOn(window, "AbortController").mockImplementation(() => controller);
 
       await HttpClient.request("https://example.com", {
         method: "POST",
         data: { username: "John Doe" },
       });
 
-      expect(global.fetch).toHaveBeenCalledWith("https://example.com", {
+      expect(fetch).toHaveBeenCalledWith("https://example.com", {
         method: "POST",
         headers: new Headers({ "content-type": "application/json" }),
         signal: controller.signal,
@@ -76,20 +80,20 @@ describe("HttpClient", () => {
     });
 
     it("should make a request with access token", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: true,
         headers: new Headers(),
       });
 
       const controller = new AbortController();
 
-      jest.spyOn(global, "AbortController").mockImplementation(() => controller);
+      jest.spyOn(window, "AbortController").mockImplementation(() => controller);
 
       await HttpClient.request("https://example.com", {
         accessToken: "0630ff9b756c1061",
       });
 
-      expect(global.fetch).toHaveBeenCalledWith("https://example.com", {
+      expect(fetch).toHaveBeenCalledWith("https://example.com", {
         headers: new Headers({ "x-access-token": "0630ff9b756c1061" }),
         signal: controller.signal,
       });
@@ -99,7 +103,7 @@ describe("HttpClient", () => {
     });
 
     it("should return data as null if content type is not json", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: true,
         headers: new Headers(),
       });
@@ -113,7 +117,7 @@ describe("HttpClient", () => {
 
     it("should throw error if request lasts longer than five seconds", async () => {
       jest
-        .spyOn(global, "fetch")
+        .spyOn(window, "fetch")
         .mockImplementation((_, { signal }) => new Promise((resolve, reject) => {
           let id;
 
@@ -134,7 +138,7 @@ describe("HttpClient", () => {
     }, 7500);
 
     it("should throw error with custom message if exists", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: false,
         headers: new Headers({ "content-type": "application/json" }),
         json: async () => ({ message: "custom error" }),
@@ -147,7 +151,7 @@ describe("HttpClient", () => {
     });
 
     it("should throw error with generic message if message not exists", async () => {
-      jest.spyOn(global, "fetch").mockResolvedValue({
+      jest.spyOn(window, "fetch").mockResolvedValue({
         ok: false,
         status: 500,
         headers: new Headers(),
