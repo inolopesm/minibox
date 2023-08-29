@@ -1,6 +1,6 @@
 import { useId } from "react";
-import { Label } from "../Label";
-import { Input } from "../Input";
+import { Label } from "./Label";
+import { Input } from "./Input";
 
 export function TextField({
   label,
