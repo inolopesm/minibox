@@ -82,6 +82,7 @@ export default function SignUpPage() {
               name="secret"
               disabled={loading || success}
               title="A chave secreta é obrigatória"
+              helperText="Não possui? Contate o administrador"
               required
             />
             <TextField
@@ -120,7 +121,7 @@ export default function SignUpPage() {
             <Button type="submit" disabled={loading  || success}>
               Cadastrar
             </Button>
-            <p className="text-center text-sm">
+            <p className="text-center text-sm text-gray-900">
               Já possui uma conta?{" "}
               <Link className="text-blue-600 hover:underline" href="/signin">
                 Entrar

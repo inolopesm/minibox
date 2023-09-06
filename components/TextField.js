@@ -1,6 +1,7 @@
 import { useId } from "react";
 import { Label } from "./Label";
 import { Input } from "./Input";
+import { HelperText } from "./HelperText";
 
 export function TextField({
   label,
@@ -11,6 +12,7 @@ export function TextField({
   maxLength,
   pattern,
   title,
+  helperText,
 }) {
   const id = useId();
 
@@ -27,6 +29,7 @@ export function TextField({
         pattern={pattern}
         title={title}
       />
+      {!!helperText && <HelperText>{helperText}</HelperText>}
     </div>
   );
 }
