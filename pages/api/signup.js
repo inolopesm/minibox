@@ -1,9 +1,7 @@
 import knex from "knex";
-import { Time } from "../../utils/Time";
 
 export default async function signInHandler(req, res) {
   if (req.method === "POST") {
-    await Time.sleep(2500);
     const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
 
     try {
