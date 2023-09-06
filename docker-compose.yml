@@ -26,6 +26,7 @@ services:
       - ./styles:/home/node/app/styles
       - ./components:/home/node/app/components
       - ./public:/home/node/app/public
+      - ./hooks:/home/node/app/hooks
     depends_on:
       db:
         condition: service_healthy

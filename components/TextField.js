@@ -13,6 +13,11 @@ export function TextField({
   pattern,
   title,
   helperText,
+  min,
+  max,
+  placeholder,
+  value,
+  onTextChange,
 }) {
   const id = useId();
 
@@ -28,6 +33,11 @@ export function TextField({
         maxLength={maxLength}
         pattern={pattern}
         title={title}
+        min={min}
+        max={max}
+        placeholder={placeholder}
+        value={value}
+        onTextChange={onTextChange}
       />
       {!!helperText && <HelperText>{helperText}</HelperText>}
     </div>

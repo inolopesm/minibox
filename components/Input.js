@@ -9,6 +9,10 @@ export function Input({
   title,
   placeholder,
   minLength,
+  min,
+  max,
+  value,
+  onTextChange,
 }) {
   return (
     <input
@@ -23,6 +27,10 @@ export function Input({
       title={title}
       placeholder={placeholder}
       minLength={minLength}
+      min={min}
+      max={max}
+      value={value}
+      onChange={onTextChange ? (e) => onTextChange(e.target.value) : undefined}
     />
   );
 }

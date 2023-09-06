@@ -1,5 +1,5 @@
 export const HttpClient = {
-  async request(url, { method, data, accessToken } = {}) {
+  async request(url, { method, data } = {}) {
     try {
       const init = { headers: new Headers() };
 
@@ -10,10 +10,6 @@ export const HttpClient = {
       if (data) {
         init.headers.set("content-type", "application/json");
         init.body = JSON.stringify(data);
-      }
-
-      if (accessToken) {
-        init.headers.set("x-access-token", accessToken);
       }
 
       const controller = new AbortController();
@@ -45,8 +41,12 @@ export const HttpClient = {
     }
   },
 
-  post(url, { data, accessToken } = {}) {
-    const options = { data, accessToken };
+  get(url) {
+    return HttpClient.request(url);
+  },
+
+  post(url, { accessToken } = {}) {
+    const options = { accessToken };
     return HttpClient.request(url, { method: "POST", ...options });
   },
 };
