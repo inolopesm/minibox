@@ -111,7 +111,7 @@ export default function SignInPage() {
             <Button type="submit" disabled={loading || success}>
               Entrar
             </Button>
-            <p className="text-center text-sm">
+            <p className="text-center text-sm text-gray-900">
               Ainda não possui uma conta?{" "}
               <Link className="text-blue-600 hover:underline" href="/signup">
                 Registre-se
