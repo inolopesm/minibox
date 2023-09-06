@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import knex from "knex";
-import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon"
-import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon"
+import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
+import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
+import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
 import { Button } from "../components/Button";
 
 export async function getServerSideProps(context) {
@@ -52,6 +53,7 @@ export default function HomePage({ user }) {
           </div>
           <div>
             <Button type="button" onClick={handleLogout}>
+              <ArrowLeftOnRectangleIcon className="inline-block mr-2 h-4 align-[-0.1875rem]" />
               Sair
             </Button>
           </div>
