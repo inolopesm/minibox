@@ -52,7 +52,7 @@ export default function HomePage({ user }) {
             Olá, {user.username}
           </div>
           <div>
-            <Button type="button" onClick={handleLogout}>
+            <Button type="button" onClick={handleLogout} variant="secondary">
               <ArrowLeftOnRectangleIcon className="inline-block mr-2 h-4 align-[-0.1875rem]" />
               Sair
             </Button>
