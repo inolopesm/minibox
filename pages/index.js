@@ -1,4 +1,4 @@
-import Link from "next/link";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import knex from "knex";
 import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
@@ -59,20 +59,20 @@ export default function HomePage({ user }) {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Link
+          <NextLink
             className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
             href="/products"
           >
             <ShoppingCartIcon className="h-12" />
             Produtos
-          </Link>
-          <Link
+          </NextLink>
+          <NextLink
             className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
             href="/teams"
           >
             <UserGroupIcon className="h-12" />
             Equipes
-          </Link>
+          </NextLink>
         </div>
       </div>
     </div>

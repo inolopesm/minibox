@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import Head from "next/head";
-import Link from "next/link";
+import NextHead from "next/head";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
+import { Link } from "../components/Link";
 import { HttpClient } from "../utils/HttpClient";
 
 export default function SignUpPage() {
@@ -53,9 +54,9 @@ export default function SignUpPage() {
 
   return (
     <>
-      <Head>
+      <NextHead>
         <title>Registre-se na plataforma | Minibox</title>
-      </Head>
+      </NextHead>
       <div className="bg-gray-100 min-h-screen py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="font-bold mb-4 text-gray-900 text-xl">
@@ -123,8 +124,8 @@ export default function SignUpPage() {
             </Button>
             <p className="text-center text-sm text-gray-900">
               Já possui uma conta?{" "}
-              <Link className="text-blue-600 hover:underline" href="/signin">
-                Entrar
+              <Link asChild>
+                <NextLink href="/signin">Entrar</NextLink>
               </Link>
             </p>
           </form>
