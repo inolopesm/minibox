@@ -21,12 +21,8 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./pages:/home/node/app/pages
-      - ./utils:/home/node/app/utils
-      - ./styles:/home/node/app/styles
-      - ./components:/home/node/app/components
+      - ./src:/home/node/app/src
       - ./public:/home/node/app/public
-      - ./hooks:/home/node/app/hooks
     depends_on:
       db:
         condition: service_healthy
