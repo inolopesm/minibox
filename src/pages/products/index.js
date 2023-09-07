@@ -29,13 +29,13 @@ export async function getServerSideProps(context) {
       return { redirect: { destination: "/signin", permanent: false } };
     }
 
-    return { props: { accessToken } };
+    return { props: {} };
   } finally {
     await db.destroy();
   }
 }
 
-export default function ProductsPage({ accessToken }) {
+export default function ProductsPage() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -53,7 +53,7 @@ export default function ProductsPage({ accessToken }) {
       .then((response) => setProducts(response.data))
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
-  }, [debouncedQuery, accessToken]);
+  }, [debouncedQuery]);
 
   return (
     <div className="bg-gray-100 min-h-screen py-10">

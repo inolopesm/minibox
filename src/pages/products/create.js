@@ -27,13 +27,13 @@ export async function getServerSideProps(context) {
       return { redirect: { destination: "/signin", permanent: false } };
     }
 
-    return { props: { accessToken } };
+    return { props: {} };
   } finally {
     await db.destroy();
   }
 }
 
-export default function CreateProductPage({ accessToken }) {
+export default function CreateProductPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
