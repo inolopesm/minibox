@@ -28,7 +28,7 @@ export default async function productsHandler(req, res) {
         .orderBy("id", "asc");
 
       if (req.query.query) {
-        query.whereILike('name', `%${req.query.query}%`);
+        query.whereILike("name", `%${req.query.query}%`);
       }
 
       const products = await query;
