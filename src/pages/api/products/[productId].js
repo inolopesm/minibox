@@ -31,7 +31,9 @@ export default async function productsHandler(req, res) {
           .json({ message: "Produto não encontrado" });
       }
 
-      const product = await db("Product").where("id", productId).first();
+      const product = await db("Product")
+        .where({ id: productId, deletedAt: null })
+        .first();
 
       if (product === undefined) {
         return res
@@ -57,11 +59,11 @@ export default async function productsHandler(req, res) {
           .json({ message: "Não autorizado" });
       }
 
-      const [{ count }] = await db("User")
+      const [{ count: countUsers }] = await db("User")
         .count({ count: "*" })
         .where({ accessToken });
 
-      if (count === "0") {
+      if (countUsers === "0") {
         return res
           .status(400)
           .json({ message: "Não autorizado" });
@@ -75,9 +77,69 @@ export default async function productsHandler(req, res) {
           .json({ message: "Produto não encontrado" });
       }
 
+      const [{ count: contProducts }] = await db("Product")
+        .count({ count: "*" })
+        .where({ id: productId, deletedAt: null });
+
+      if (contProducts === "0") {
+        return res
+          .status(400)
+          .json({ message: "Produto não encontrado" });
+      }
+
       const { name, value } = req.body;
 
       await db("Product").update({ name, value }).where("id", productId);
+
+      return res.status(200).end();
+    } finally {
+      await db.destroy();
+    }
+  }
+
+  if (req.method === "DELETE") {
+    const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
+
+    try {
+      const { accessToken } = req.cookies;
+
+      if (accessToken === undefined) {
+        return res
+          .status(400)
+          .json({ message: "Não autorizado" });
+      }
+
+      const [{ count: countUsers }] = await db("User")
+        .count({ count: "*" })
+        .where({ accessToken });
+
+      if (countUsers === "0") {
+        return res
+          .status(400)
+          .json({ message: "Não autorizado" });
+      }
+
+      const productId = +req.query.productId;
+
+      if (Number.isNaN(productId)) {
+        return res
+          .status(400)
+          .json({ message: "Produto não encontrado" });
+      }
+
+      const [{ count: contProducts }] = await db("Product")
+        .count({ count: "*" })
+        .where({ id: productId, deletedAt: null });
+
+      if (contProducts === "0") {
+        return res
+          .status(400)
+          .json({ message: "Produto não encontrado" });
+      }
+
+      await db("Product")
+        .update({ deletedAt: Date.now() })
+        .where("id", productId);
 
       return res.status(200).end();
     } finally {

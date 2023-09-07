@@ -3,6 +3,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import knex from "knex";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import TrashIcon from "@heroicons/react/24/outline/TrashIcon";
 import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
@@ -33,7 +34,9 @@ export async function getServerSideProps(context) {
       return { notFound: true };
     }
 
-    const product = await db("Product").where("id", productId).first();
+    const product = await db("Product")
+      .where({ id: productId, deletedAt: null })
+      .first();
 
     if (product === undefined) {
       return { notFound: true };
@@ -48,7 +51,7 @@ export async function getServerSideProps(context) {
 export default function EditProductPage({ product }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -65,7 +68,7 @@ export default function EditProductPage({ product }) {
 
   function handleSubmit(event) {
     function handleSuccess() {
-      setSuccess(true);
+      setSuccess("editado");
       router.push("/products");
     }
 
@@ -83,10 +86,27 @@ export default function EditProductPage({ product }) {
       .finally(() => setLoading(false));
   }
 
+  function handleDelete() {
+    const confirmed = window.confirm("Você deseja realmente excluir este produto?");
+
+    if (confirmed) {
+      function handleSuccess() {
+        setSuccess("deletado");
+        router.push("/products");
+      }
+
+      HttpClient
+        .delete(`/api/products/${product.id}`)
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
+    }
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen py-10">
       <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex justify-between items-center gap-2 mb-4">
           <Button variant="secondary" asChild>
             <NextLink href="/products">
               <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
@@ -94,6 +114,11 @@ export default function EditProductPage({ product }) {
           </Button>
           <div className="font-bold text-gray-900 text-xl">
             Editar Produto
+          </div>
+          <div>
+            <Button variant="secondary" onClick={handleDelete}>
+              <TrashIcon className="h-4 inline-block align-[-0.1875rem]" />
+            </Button>
           </div>
         </div>
         <form
@@ -105,9 +130,9 @@ export default function EditProductPage({ product }) {
               {error.message}
             </Alert>
           )}
-          {success && (
+          {success !== null && (
             <Alert variant="success">
-              Produto editado com sucesso. Redirecionando para a listagem.
+              Produto {success} com sucesso. Redirecionando para a listagem.
             </Alert>
           )}
           <TextField

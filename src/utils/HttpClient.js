@@ -52,4 +52,8 @@ export const HttpClient = {
   put(url, { data } = {}) {
     return HttpClient.request(url, { method: "PUT", data });
   },
+
+  delete(url) {
+    return HttpClient.request(url, { method: "DELETE" });
+  },
 };
