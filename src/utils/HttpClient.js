@@ -45,8 +45,7 @@ export const HttpClient = {
     return HttpClient.request(url);
   },
 
-  post(url, { accessToken, data } = {}) {
-    const options = { accessToken, data };
-    return HttpClient.request(url, { method: "POST", ...options });
+  post(url, { data } = {}) {
+    return HttpClient.request(url, { method: "POST", data });
   },
 };
