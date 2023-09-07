@@ -87,23 +87,6 @@ export default function EditProductPage({ product }) {
       .finally(() => setLoading(false));
   }
 
-  function handleDelete() {
-    const confirmed = window.confirm("Você deseja realmente excluir este produto?");
-
-    if (confirmed) {
-      function handleSuccess() {
-        setSuccess("deletado");
-        router.push("/products");
-      }
-
-      HttpClient
-        .delete(`/api/products/${product.id}`)
-        .then(() => handleSuccess())
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
-  }
-
   return (
     <>
       <NextHead>
@@ -111,7 +94,7 @@ export default function EditProductPage({ product }) {
       </NextHead>
       <div className="bg-gray-100 min-h-screen py-10">
         <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
-          <div className="flex justify-between items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
               <NextLink href="/products">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
@@ -119,11 +102,6 @@ export default function EditProductPage({ product }) {
             </Button>
             <div className="font-bold text-gray-900 text-xl">
               Editar Produto
-            </div>
-            <div>
-              <Button variant="secondary" onClick={handleDelete}>
-                <TrashIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </Button>
             </div>
           </div>
           <form

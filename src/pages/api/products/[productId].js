@@ -97,56 +97,6 @@ export default async function productsHandler(req, res) {
     }
   }
 
-  if (req.method === "DELETE") {
-    const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-    try {
-      const { accessToken } = req.cookies;
-
-      if (accessToken === undefined) {
-        return res
-          .status(400)
-          .json({ message: "Não autorizado" });
-      }
-
-      const [{ count: countUsers }] = await db("User")
-        .count({ count: "*" })
-        .where({ accessToken });
-
-      if (countUsers === "0") {
-        return res
-          .status(400)
-          .json({ message: "Não autorizado" });
-      }
-
-      const productId = +req.query.productId;
-
-      if (Number.isNaN(productId)) {
-        return res
-          .status(400)
-          .json({ message: "Produto não encontrado" });
-      }
-
-      const [{ count: contProducts }] = await db("Product")
-        .count({ count: "*" })
-        .where({ id: productId, deletedAt: null });
-
-      if (contProducts === "0") {
-        return res
-          .status(400)
-          .json({ message: "Produto não encontrado" });
-      }
-
-      await db("Product")
-        .update({ deletedAt: Date.now() })
-        .where("id", productId);
-
-      return res.status(200).end();
-    } finally {
-      await db.destroy();
-    }
-  }
-
   return res
     .status(500)
     .json({ message: "Method not implemented" });
