@@ -13,6 +13,7 @@ export function Input({
   max,
   value,
   onTextChange,
+  defaultValue,
 }) {
   return (
     <input
@@ -31,6 +32,7 @@ export function Input({
       max={max}
       value={value}
       onChange={onTextChange ? (e) => onTextChange(e.target.value) : undefined}
+      defaultValue={defaultValue}
     />
   );
 }

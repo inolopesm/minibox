@@ -18,6 +18,7 @@ export function TextField({
   placeholder,
   value,
   onTextChange,
+  defaultValue,
 }) {
   const id = useId();
 
@@ -38,6 +39,7 @@ export function TextField({
         placeholder={placeholder}
         value={value}
         onTextChange={onTextChange}
+        defaultValue={defaultValue}
       />
       {!!helperText && <HelperText>{helperText}</HelperText>}
     </div>
