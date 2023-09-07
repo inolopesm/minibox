@@ -85,7 +85,7 @@ export default function CreateProductPage() {
           </div>
         </div>
         <form
-          className="flex flex-col gap-4"
+          className="grid gap-4"
           onSubmit={handleSubmit}
         >
           {error && (
@@ -111,12 +111,13 @@ export default function CreateProductPage() {
           />
           <TextField
             label="Valor em centavos"
-            type="text"
+            type="number"
             name="value"
             min={1}
             max={99999}
             disabled={loading || success}
             helperText="Em centavos para ajudar a realizar cálculos precisos posteriormente"
+            title="O valor é obrigatório e deve ser um número entre 1 e 99999"
             placeholder="350"
             required
           />

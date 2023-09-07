@@ -48,4 +48,8 @@ export const HttpClient = {
   post(url, { data } = {}) {
     return HttpClient.request(url, { method: "POST", data });
   },
+
+  put(url, { data } = {}) {
+    return HttpClient.request(url, { method: "PUT", data });
+  },
 };
