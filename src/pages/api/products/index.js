@@ -23,7 +23,9 @@ export default async function productsHandler(req, res) {
           .json({ message: "Não autorizado" });
       }
 
-      const query = db("Product");
+      const query = db("Product")
+        .where({ deletedAt: null })
+        .orderBy("id", "asc");
 
       if (req.query.query) {
         query.whereILike('name', `%${req.query.query}%`);
