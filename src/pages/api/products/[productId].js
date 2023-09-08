@@ -77,11 +77,11 @@ export default async function productsHandler(req, res) {
           .json({ message: "Produto não encontrado" });
       }
 
-      const [{ count: contProducts }] = await db("Product")
+      const [{ count: countProducts }] = await db("Product")
         .count({ count: "*" })
         .where({ id: productId, deletedAt: null });
 
-      if (contProducts === "0") {
+      if (countProducts === "0") {
         return res
           .status(400)
           .json({ message: "Produto não encontrado" });

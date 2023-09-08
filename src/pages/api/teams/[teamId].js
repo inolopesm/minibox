@@ -77,11 +77,11 @@ export default async function teamsHandler(req, res) {
           .json({ message: "Equipe não encontrada" });
       }
 
-      const [{ count: contTeams }] = await db("Team")
+      const [{ count: countTeams }] = await db("Team")
         .count({ count: "*" })
         .where({ id: teamId, deletedAt: null });
 
-      if (contTeams === "0") {
+      if (countTeams === "0") {
         return res
           .status(400)
           .json({ message: "Equipe não encontrada" });

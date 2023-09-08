@@ -9,7 +9,7 @@ export default async function signInHandler(req, res) {
       const { username, password } = req.body;
 
       const user = await db("User")
-        .select(["password"])
+        .select("password")
         .where({ username })
         .first();
 
