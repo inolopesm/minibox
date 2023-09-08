@@ -4,7 +4,6 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import knex from "knex";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import TrashIcon from "@heroicons/react/24/outline/TrashIcon";
 import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
