@@ -2,57 +2,42 @@ import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import knex from "knex";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
-import { HttpClient } from "../../utils/HttpClient";
+import { api } from "../../services/api";
+import { Cookie } from "../../utils/Cookie";
 
-export async function getServerSideProps(context) {
-  const { accessToken } = context.req.cookies;
-
-  if (!accessToken) {
-    return { redirect: { destination: "/signin", permanent: false } };
-  }
-
-  const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-  try {
-    const [{ count }] = await db("User")
-      .count({ count: "*" })
-      .where({ accessToken });
-
-    if (count === "0") {
-      context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
-      return { redirect: { destination: "/signin", permanent: false } };
-    }
-
-    const teamId = +context.query.teamId;
-
-    if (Number.isNaN(teamId)) {
-      return { notFound: true };
-    }
-
-    const team = await db("Team")
-      .where({ id: teamId, deletedAt: null })
-      .first();
-
-    if (team === undefined) {
-      return { notFound: true };
-    }
-
-    return { props: { team } };
-  } finally {
-    await db.destroy();
-  }
-}
-
-export default function EditTeamPage({ team }) {
+export default function EditTeamPage() {
+  const [accessToken, setAccessToken] = useState();
+  const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setAccessToken(Cookie.get("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    if (accessToken === null) {
+      router.push("/signin");
+    }
+  }, [accessToken, router]);
+
+  useEffect(() => {
+    if (typeof accessToken === "string" && router.isReady) {
+      setLoading(true);
+
+      api
+        .get(`/teams/${router.query.teamId}`, { accessToken })
+        .then((response) => setTeam(response.data))
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
+    }
+  }, [accessToken, router.isReady, router.query.teamId]);
 
   useEffect(() => {
     if (error) {
@@ -66,18 +51,20 @@ export default function EditTeamPage({ team }) {
     }
   }, [success]);
 
-  function handleSubmit(event) {
-    function handleSuccess() {
-      setSuccess("editada");
+  const handleSubmit = (event) => {
+    const handleSuccess = () => {
+      setSuccess(true);
       router.push("/teams");
-    }
+    };
 
     event.preventDefault();
     setLoading(true);
     setError(null);
 
-    HttpClient
-      .put(`/api/teams/${team.id}`, { data: Object.fromEntries(new FormData(event.target)) })
+    const data = Object.fromEntries(new FormData(event.target));
+
+    api
+      .put(`/teams/${team.id}`, { data, accessToken })
       .then(() => handleSuccess())
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
@@ -109,23 +96,25 @@ export default function EditTeamPage({ team }) {
                 {error.message}
               </Alert>
             )}
-            {success !== null && (
+            {success && (
               <Alert variant="success">
-                Equipe {success} com sucesso. Redirecionando para a listagem.
+                Equipe editada com sucesso. Redirecionando para a listagem.
               </Alert>
             )}
-            <TextField
-              label="Nome"
-              type="text"
-              name="name"
-              disabled={loading || success}
-              maxLength={24}
-              pattern="[A-zÀ-ú0-9][A-zÀ-ú0-9 ]{1,22}[A-zÀ-ú0-9]"
-              placeholder="Minibox"
-              title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
-              defaultValue={team.name}
-              required
-            />
+            {team !== null && (
+              <TextField
+                label="Nome"
+                type="text"
+                name="name"
+                disabled={loading || success}
+                maxLength={24}
+                pattern="[A-zÀ-ú0-9][A-zÀ-ú0-9 ]{1,22}[A-zÀ-ú0-9]"
+                placeholder="Minibox"
+                title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
+                defaultValue={team.name}
+                required
+              />
+            )}
             <Button type="submit" disabled={loading || success}>
               Salvar
             </Button>

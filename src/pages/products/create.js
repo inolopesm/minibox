@@ -2,43 +2,29 @@ import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import knex from "knex";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
-import { HttpClient } from "../../utils/HttpClient";
-
-export async function getServerSideProps(context) {
-  const { accessToken } = context.req.cookies;
-
-  if (!accessToken) {
-    return { redirect: { destination: "/signin", permanent: false } };
-  }
-
-  const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-  try {
-    const [{ count }] = await db("User")
-      .count({ count: "*" })
-      .where({ accessToken });
-
-    if (count === "0") {
-      context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
-      return { redirect: { destination: "/signin", permanent: false } };
-    }
-
-    return { props: {} };
-  } finally {
-    await db.destroy();
-  }
-}
+import { api } from "../../services/api";
+import { Cookie } from "../../utils/Cookie";
 
 export default function CreateProductPage() {
+  const [accessToken, setAccessToken] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setAccessToken(Cookie.get("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    if (accessToken === null) {
+      router.push("/signin");
+    }
+  }, [accessToken, router]);
 
   useEffect(() => {
     if (error) {
@@ -52,11 +38,11 @@ export default function CreateProductPage() {
     }
   }, [success]);
 
-  function handleSubmit(event) {
-    function handleSuccess() {
+  const handleSubmit = (event) => {
+    const handleSuccess = () => {
       setSuccess(true);
       router.push("/products");
-    }
+    };
 
     event.preventDefault();
     setLoading(true);
@@ -65,12 +51,12 @@ export default function CreateProductPage() {
     const data = Object.fromEntries(new FormData(event.target));
     data.value = Number.parseInt(data.value, 10);
 
-    HttpClient
-      .post("/api/products", { data })
+    api
+      .post("/products", { data, accessToken })
       .then(() => handleSuccess())
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
-  }
+  };
 
   return (
     <>

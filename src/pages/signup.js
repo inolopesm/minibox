@@ -6,7 +6,7 @@ import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { Link } from "../components/Link";
-import { HttpClient } from "../utils/HttpClient";
+import { api } from "../services/api";
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
@@ -26,15 +26,15 @@ export default function SignUpPage() {
     }
   }, [success]);
 
-  function handleSubmit(event) {
-    function handleSuccess() {
+  const handleSubmit = (event) => {
+    const handleSuccess = () => {
       setSuccess(true);
       router.push("/signin");
-    }
+    };
 
     event.preventDefault();
 
-    const { passwordConfirmation, ...data } = Object.fromEntries(new FormData(event.target));
+    const { passwordConfirmation, apiKey, ...data } = Object.fromEntries(new FormData(event.target));
 
     if (data.password !== passwordConfirmation) {
       const errorMessage = "A senha e a confirmação da senha devem ser iguais";
@@ -45,12 +45,12 @@ export default function SignUpPage() {
     setLoading(true);
     setError(null);
 
-    HttpClient
-      .post("/api/signup", { data })
+    api
+      .post("/users", { data, apiKey })
       .then(() => handleSuccess())
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
-  }
+  };
 
   return (
     <>
@@ -80,7 +80,7 @@ export default function SignUpPage() {
             <TextField
               label="Chave secreta"
               type="password"
-              name="secret"
+              name="apiKey"
               disabled={loading || success}
               title="A chave secreta é obrigatória"
               helperText="Não possui? Contate o administrador"

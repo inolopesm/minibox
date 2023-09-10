@@ -1,5 +1,9 @@
-export const HttpClient = {
-  async request(url, { method, data } = {}) {
+export class HttpClient {
+  constructor(baseUrl) {
+    this.baseUrl = baseUrl;
+  }
+
+  async request(url, { method, data, accessToken, apiKey } = {}) {
     try {
       const init = { headers: new Headers() };
 
@@ -12,11 +16,19 @@ export const HttpClient = {
         init.body = JSON.stringify(data);
       }
 
+      if (accessToken) {
+        init.headers.set("x-access-token", accessToken);
+      }
+
+      if (apiKey) {
+        init.headers.set("x-api-key", apiKey);
+      }
+
       const controller = new AbortController();
       init.signal = controller.signal;
 
       const id = setTimeout(() => controller.abort(), 5000);
-      const response = await fetch(url, init);
+      const response = await fetch(new URL(url, this.baseUrl), init);
       clearTimeout(id);
 
       const contentType = response.headers.get("content-type");
@@ -39,21 +51,17 @@ export const HttpClient = {
 
       throw error;
     }
-  },
+  }
 
-  get(url) {
-    return HttpClient.request(url);
-  },
+  get(url, { accessToken, apiKey }) {
+    return this.request(url, { accessToken, apiKey });
+  }
 
-  post(url, { data } = {}) {
-    return HttpClient.request(url, { method: "POST", data });
-  },
+  post(url, { data, accessToken, apiKey } = {}) {
+    return this.request(url, { method: "POST", data, accessToken, apiKey });
+  }
 
-  put(url, { data } = {}) {
-    return HttpClient.request(url, { method: "PUT", data });
-  },
-
-  delete(url) {
-    return HttpClient.request(url, { method: "DELETE" });
-  },
-};
+  put(url, { data, accessToken, apiKey } = {}) {
+    return this.request(url, { method: "PUT", data, accessToken, apiKey });
+  }
+}

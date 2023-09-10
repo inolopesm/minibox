@@ -1,40 +1,34 @@
+import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import knex from "knex";
 import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
 import { Button } from "../components/Button";
+import { Cookie } from "../utils/Cookie";
+import { JWT } from "../utils/JWT";
 
-export async function getServerSideProps(context) {
-  const { accessToken } = context.req.cookies;
-
-  if (!accessToken) {
-    return { redirect: { destination: "/signin", permanent: false } };
-  }
-
-  const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-  try {
-    const user = await db("User")
-      .select("username")
-      .where({ accessToken })
-      .first();
-
-    if (user === undefined) {
-      context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
-      return { redirect: { destination: "/signin", permanent: false } };
-    }
-
-    return { props: { user } };
-  } finally {
-    await db.destroy();
-  }
-}
-
-export default function HomePage({ user }) {
+export default function HomePage() {
+  const [accessToken, setAccessToken] = useState();
+  const [user, setUser] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setAccessToken(Cookie.get("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    if (accessToken === null) {
+      router.push("/signin");
+    }
+  }, [accessToken, router]);
+
+  useEffect(() => {
+    if (typeof accessToken === "string") {
+      setUser(JWT.decode(accessToken));
+    }
+  }, [accessToken]);
 
   const handleLogout = () => {
     const confirmed = window.confirm("Você realmente deseja sair?");
@@ -54,7 +48,7 @@ export default function HomePage({ user }) {
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="flex justify-between items-center mb-4">
             <div className="font-bold text-gray-900 text-xl">
-              Olá, {user.username}
+              Olá, {user?.username}
             </div>
             <div>
               <Button type="button" onClick={handleLogout} variant="secondary">

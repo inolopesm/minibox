@@ -1,60 +1,49 @@
+import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
-import knex from "knex";
+import { useRouter } from "next/router";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
 import { Button } from "../../components/Button";
 import { Link } from "../../components/Link";
 import { TextField } from "../../components/TextField";
-import { useEffect, useState } from "react";
-import { HttpClient } from "../../utils/HttpClient";
 import { Alert } from "../../components/Alert";
 import { useDebounce } from "../../hooks/useDebounce";
-
-export async function getServerSideProps(context) {
-  const { accessToken } = context.req.cookies;
-
-  if (!accessToken) {
-    return { redirect: { destination: "/signin", permanent: false } };
-  }
-
-  const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-  try {
-    const [{ count }] = await db("User")
-      .count({ count: "*" })
-      .where({ accessToken });
-
-    if (count === "0") {
-      context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
-      return { redirect: { destination: "/signin", permanent: false } };
-    }
-
-    return { props: {} };
-  } finally {
-    await db.destroy();
-  }
-}
+import { api } from "../../services/api";
+import { Cookie } from "../../utils/Cookie";
 
 export default function TeamsPage() {
-  const [query, setQuery] = useState("");
+  const [accessToken, setAccessToken] = useState();
+  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [teams, setTeams] = useState([]);
-  const debouncedQuery = useDebounce(query);
+  const debouncedName = useDebounce(name);
+  const router = useRouter();
 
   useEffect(() => {
-    setLoading(true);
+    setAccessToken(Cookie.get("accessToken"));
+  }, []);
 
-    const url = new URL("/api/teams", window.location.origin);
-    url.searchParams.set("query", debouncedQuery);
+  useEffect(() => {
+    if (accessToken === null) {
+      router.push("/signin");
+    }
+  }, [accessToken, router]);
 
-    HttpClient
-      .get(url.toString())
-      .then((response) => setTeams(response.data))
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
-  }, [debouncedQuery]);
+  useEffect(() => {
+    if (typeof accessToken === "string") {
+      setLoading(true);
+
+      const searchParams = new URLSearchParams({ name: debouncedName });
+
+      api
+        .get(`/teams?${searchParams}`, { accessToken })
+        .then((response) => setTeams(response.data))
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
+    }
+  }, [accessToken, debouncedName]);
 
   return (
     <>
@@ -91,8 +80,8 @@ export default function TeamsPage() {
             type="search"
             label="Busca"
             placeholder="Minibox"
-            value={query}
-            onTextChange={setQuery}
+            value={name}
+            onTextChange={setName}
           />
 
           {!loading
@@ -101,12 +90,16 @@ export default function TeamsPage() {
                   <table className="w-full text-sm text-left text-gray-500">
                     <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
                       <tr>
+                        <th className="px-6 py-3">#</th>
                         <th className="px-6 py-3">Nome</th>
                       </tr>
                     </thead>
                     <tbody>
                       {teams.map((team) => (
                         <tr key={team.id}>
+                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                            {team.id}
+                          </td>
                           <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                             <Link asChild>
                               <NextLink href={`/teams/${team.id}`}>

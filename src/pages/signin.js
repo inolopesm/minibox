@@ -2,42 +2,29 @@ import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import knex from "knex";
 import { TextField } from "../components/TextField";
 import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { Link } from "../components/Link";
-import { HttpClient } from "../utils/HttpClient";
-
-export async function getServerSideProps(context) {
-  const { accessToken } = context.req.cookies;
-
-  if (accessToken) {
-    const db = knex({ client: "pg", connection: process.env.DATABASE_URL });
-
-    try {
-      const [{ count }] = await db("User")
-        .count({ count: "*" })
-        .where({ accessToken });
-
-      if (count === "1") {
-        return { redirect: { destination: "/", permanent: false } };
-      } else {
-        context.res.setHeader("Set-Cookie", "accessToken=; Max-Age=0; path=/");
-      }
-    } finally {
-      await db.destroy();
-    }
-  }
-
-  return { props: {} };
-}
+import { api } from "../services/api";
+import { Cookie } from "../utils/Cookie";
 
 export default function SignInPage() {
+  const [accessToken, setAccessToken] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setAccessToken(Cookie.get("accessToken"));
+  }, []);
+
+  useEffect(() => {
+    if (typeof accessToken === "string") {
+      router.push("/");
+    }
+  }, [accessToken, router]);
 
   useEffect(() => {
     if (error) {
@@ -51,8 +38,8 @@ export default function SignInPage() {
     }
   }, [success]);
 
-  function handleSubmit(event) {
-    function handleSuccess(response) {
+  const handleSubmit = (event) => {
+    const handleSuccess = (response) => {
       const cookie = [`accessToken=${response.data.accessToken}`];
       cookie.push("samesite=strict");
       cookie.push("path=/");
@@ -66,8 +53,8 @@ export default function SignInPage() {
     setLoading(true);
     setError(null);
 
-    HttpClient
-      .post("/api/signin", { data: Object.fromEntries(new FormData(event.target)) })
+    api
+      .post("/sessions", { data: Object.fromEntries(new FormData(event.target)) })
       .then((response) => handleSuccess(response))
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
