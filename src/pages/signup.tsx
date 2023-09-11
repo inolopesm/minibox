@@ -7,26 +7,16 @@ import { Button } from "../components/Button";
 import { Alert } from "../components/Alert";
 import { Link } from "../components/Link";
 import { api } from "../services/api";
+import { useError } from "../hooks/useError";
+import { useSuccess } from "../hooks/useSuccess";
 
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
   const router = useRouter();
 
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     const handleSuccess = () => {
       setSuccess(true);
       router.push("/signin");
@@ -34,7 +24,14 @@ export default function SignUpPage() {
 
     event.preventDefault();
 
-    const { passwordConfirmation, apiKey, ...data } = Object.fromEntries(new FormData(event.target));
+    const { passwordConfirmation, apiKey, ...data } = Object.fromEntries(
+      new FormData(event.target as HTMLFormElement)
+    ) as {
+      apiKey: string;
+      username: string;
+      password: string;
+      passwordConfirmation: string;
+    };
 
     if (data.password !== passwordConfirmation) {
       const errorMessage = "A senha e a confirmação da senha devem ser iguais";
@@ -62,10 +59,7 @@ export default function SignUpPage() {
           <div className="font-bold mb-4 text-gray-900 text-xl">
             Registre-se na plataforma
           </div>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
@@ -119,7 +113,7 @@ export default function SignUpPage() {
               title="A confirmação da senha é obrigatória e deve ser igual a senha informada acima"
               required
             />
-            <Button type="submit" disabled={loading  || success}>
+            <Button type="submit" disabled={loading || success}>
               Cadastrar
             </Button>
             <p className="text-center text-sm text-gray-900">

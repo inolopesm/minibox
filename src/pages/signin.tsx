@@ -8,12 +8,14 @@ import { Alert } from "../components/Alert";
 import { Link } from "../components/Link";
 import { api } from "../services/api";
 import { Cookie } from "../utils/Cookie";
+import { useError } from "../hooks/useError";
+import { useSuccess } from "../hooks/useSuccess";
 
 export default function SignInPage() {
-  const [accessToken, setAccessToken] = useState();
+  const [accessToken, setAccessToken] = useState<string | null>();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
   const router = useRouter();
 
   useEffect(() => {
@@ -26,20 +28,8 @@ export default function SignInPage() {
     }
   }, [accessToken, router]);
 
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
-    const handleSuccess = (response) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    const handleSuccess = (response: { data: { accessToken: string } }) => {
       const cookie = [`accessToken=${response.data.accessToken}`];
       cookie.push("samesite=strict");
       cookie.push("path=/");
@@ -47,18 +37,21 @@ export default function SignInPage() {
       document.cookie = cookie.join("; ");
       setSuccess(true);
       router.push("/");
-    }
+    };
 
     event.preventDefault();
     setLoading(true);
     setError(null);
 
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data = Object.fromEntries(formData);
+
     api
-      .post("/sessions", { data: Object.fromEntries(new FormData(event.target)) })
+      .post("/sessions", { data })
       .then((response) => handleSuccess(response))
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
-  }
+  };
 
   return (
     <>
@@ -70,10 +63,7 @@ export default function SignInPage() {
           <div className="font-bold mb-4 text-gray-900 text-xl">
             Acesse a plataforma
           </div>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
