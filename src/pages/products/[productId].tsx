@@ -7,25 +7,33 @@ import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+import { useSuccess } from "../../hooks/useSuccess";
+
+interface Product {
+  id: number;
+  name: string;
+  value: number;
+}
+
+interface UpdateProductFormData {
+  name: string;
+  value: number;
+}
+
+interface UpdateProductDTO {
+  name: string;
+  value: number;
+}
 
 export default function EditProductPage() {
-  const [accessToken, setAccessToken] = useState();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
+  const { accessToken } = useAuthentication(router);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
     if (typeof accessToken === "string" && router.isReady) {
@@ -37,38 +45,29 @@ export default function EditProductPage() {
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
     }
-  }, [accessToken, router.isReady, router.query.productId]);
+  }, [accessToken, router.isReady, router.query.productId, setError]);
 
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (typeof accessToken === "string") {
+      const handleSuccess = () => {
+        setSuccess(true);
+        router.push("/products");
+      };
+
+      event.preventDefault();
+      setLoading(true);
+      setError(null);
+
+      const fd = new FormData(event.target as HTMLFormElement);
+      const o = Object.fromEntries(fd) as unknown as UpdateProductFormData;
+      const data: UpdateProductDTO = { ...o, value: Number(o.value) };
+
+      api
+        .put(`/products/${router.query.productId}`, { data, accessToken })
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
-    const handleSuccess = () => {
-      setSuccess(true);
-      router.push("/products");
-    };
-
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const data = Object.fromEntries(new FormData(event.target));
-    data.value = Number.parseInt(data.value, 10);
-
-    api
-      .put(`/products/${router.query.productId}`, { data, accessToken })
-      .then(() => handleSuccess())
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
   };
 
   return (
@@ -88,10 +87,7 @@ export default function EditProductPage() {
               Editar Produto
             </div>
           </div>
-          <form
-            className="grid gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
@@ -120,13 +116,13 @@ export default function EditProductPage() {
                   label="Valor em centavos"
                   type="number"
                   name="value"
-                  min={1}
-                  max={99999}
+                  min="1"
+                  max="99999"
                   disabled={loading || success}
                   helperText="Em centavos para ajudar a realizar cálculos precisos posteriormente"
                   title="O valor é obrigatório e deve ser um número entre 1 e 99999"
                   placeholder="350"
-                  defaultValue={product.value}
+                  defaultValue={product.value + ""}
                   required
                 />
               </>
@@ -139,6 +135,4 @@ export default function EditProductPage() {
       </div>
     </>
   );
-
 }
-
