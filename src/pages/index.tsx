@@ -1,33 +1,30 @@
-import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import BuildingOfficeIcon from "@heroicons/react/24/outline/BuildingOfficeIcon";
+import { useEffect, useState } from "react";
 import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
 import { Button } from "../components/Button";
-import { Cookie } from "../utils/Cookie";
+import { useAuthentication } from "../hooks/useAuthentication";
 import { JWT } from "../utils/JWT";
 
+interface User {
+  sub: number;
+  username: string;
+  exp: number;
+}
+
 export default function HomePage() {
-  const [accessToken, setAccessToken] = useState();
-  const [user, setUser] = useState(null);
   const router = useRouter();
+  const { accessToken } = useAuthentication(router);
 
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     if (typeof accessToken === "string") {
-      setUser(JWT.decode(accessToken));
+      setUser(JWT.decode<User>(accessToken));
     }
   }, [accessToken]);
 
