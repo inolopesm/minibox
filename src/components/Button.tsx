@@ -4,10 +4,9 @@ import { ClassNames } from "../utils/ClassNames";
 export type ButtonProps = Partial<
   Pick<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
-    "children" | "disabled" | "onClick"
+    "children" | "disabled" | "onClick" | "type"
   >
 > & {
-  type: "button" | "reset" | "submit";
   variant?: "primary" | "secondary";
   asChild?: boolean;
 };
