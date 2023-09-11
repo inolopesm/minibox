@@ -1,34 +1,39 @@
+interface RequestOptions {
+  method?: string;
+  headers?: Headers;
+  data?: Record<string, unknown>;
+}
+
 export class HttpClient {
-  constructor(baseUrl) {
+  private readonly baseUrl: string | URL;
+
+  constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
 
-  async request(url, { method, data, accessToken, apiKey } = {}) {
+  async request(path: string, options: RequestOptions = {}) {
     try {
-      const init = { headers: new Headers() };
+      const init: {
+        headers: Headers;
+        method?: string;
+        body?: string;
+        signal?: AbortSignal;
+      } = { headers: options.headers ?? new Headers() };
 
-      if (method) {
-        init.method = method;
+      if (options.method) {
+        init.method = options.method;
       }
 
-      if (data) {
+      if (options.data) {
         init.headers.set("content-type", "application/json");
-        init.body = JSON.stringify(data);
-      }
-
-      if (accessToken) {
-        init.headers.set("x-access-token", accessToken);
-      }
-
-      if (apiKey) {
-        init.headers.set("x-api-key", apiKey);
+        init.body = JSON.stringify(options.data);
       }
 
       const controller = new AbortController();
       init.signal = controller.signal;
 
       const id = setTimeout(() => controller.abort(), 5000);
-      const response = await fetch(new URL(url, this.baseUrl), init);
+      const response = await fetch(new URL(path, this.baseUrl), init);
       clearTimeout(id);
 
       const contentType = response.headers.get("content-type");
@@ -51,17 +56,5 @@ export class HttpClient {
 
       throw error;
     }
-  }
-
-  get(url, { accessToken, apiKey }) {
-    return this.request(url, { accessToken, apiKey });
-  }
-
-  post(url, { data, accessToken, apiKey } = {}) {
-    return this.request(url, { method: "POST", data, accessToken, apiKey });
-  }
-
-  put(url, { data, accessToken, apiKey } = {}) {
-    return this.request(url, { method: "PUT", data, accessToken, apiKey });
   }
 }
