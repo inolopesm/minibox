@@ -3,3 +3,4 @@ node_modules
 .env.local
 .swc
 coverage
+tsconfig.tsbuildinfo
