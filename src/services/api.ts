@@ -2,7 +2,7 @@ import { HttpClient } from "../utils/HttpClient";
 
 interface RequestOptions {
   method?: string;
-  data?: Record<string, unknown>;
+  data?: unknown;
   accessToken?: string;
   apiKey?: string;
 }
@@ -27,7 +27,7 @@ export class API {
     const init: {
       method?: string;
       headers: Headers;
-      data?: Record<string, unknown>;
+      data?: unknown;
     } = { headers: new Headers() };
 
     if (method) init.method = method;

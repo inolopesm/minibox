@@ -1,7 +1,7 @@
 interface RequestOptions {
   method?: string;
   headers?: Headers;
-  data?: Record<string, unknown>;
+  data?: unknown;
 }
 
 export class HttpClient {
