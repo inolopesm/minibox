@@ -1,19 +1,21 @@
-export type InputProps = Pick<
-  HTMLInputElement,
-  | "defaultValue"
-  | "disabled"
-  | "type"
-  | "id"
-  | "max"
-  | "maxLength"
-  | "min"
-  | "minLength"
-  | "name"
-  | "pattern"
-  | "placeholder"
-  | "required"
-  | "title"
-  | "value"
+export type InputProps = Partial<
+  Pick<
+    HTMLInputElement,
+    | "defaultValue"
+    | "disabled"
+    | "type"
+    | "id"
+    | "max"
+    | "maxLength"
+    | "min"
+    | "minLength"
+    | "name"
+    | "pattern"
+    | "placeholder"
+    | "required"
+    | "title"
+    | "value"
+  >
 > & {
   onTextChange?: (value: string) => void;
 };

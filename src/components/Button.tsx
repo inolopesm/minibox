@@ -1,9 +1,11 @@
 import { Slot } from "@radix-ui/react-slot";
 import { ClassNames } from "../utils/ClassNames";
 
-export type ButtonProps = Pick<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
-  "children" | "disabled" | "onClick"
+export type ButtonProps = Partial<
+  Pick<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    "children" | "disabled" | "onClick"
+  >
 > & {
   type: "button" | "reset" | "submit";
   variant?: "primary" | "secondary";
