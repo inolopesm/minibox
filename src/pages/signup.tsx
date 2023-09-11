@@ -10,6 +10,18 @@ import { api } from "../services/api";
 import { useError } from "../hooks/useError";
 import { useSuccess } from "../hooks/useSuccess";
 
+interface SignUpFormData {
+  apiKey: string;
+  username: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
+interface CreateUserDTO {
+  username: string;
+  password: string;
+}
+
 export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
@@ -24,14 +36,10 @@ export default function SignUpPage() {
 
     event.preventDefault();
 
-    const { passwordConfirmation, apiKey, ...data } = Object.fromEntries(
-      new FormData(event.target as HTMLFormElement)
-    ) as {
-      apiKey: string;
-      username: string;
-      password: string;
-      passwordConfirmation: string;
-    };
+    const fd = new FormData(event.target as HTMLFormElement);
+    const o = Object.fromEntries(fd) as unknown as SignUpFormData;
+    const { passwordConfirmation, apiKey } = o;
+    const data: CreateUserDTO = { username: o.username, password: o.password };
 
     if (data.password !== passwordConfirmation) {
       const errorMessage = "A senha e a confirmação da senha devem ser iguais";

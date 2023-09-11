@@ -11,6 +11,11 @@ import { Cookie } from "../utils/Cookie";
 import { useError } from "../hooks/useError";
 import { useSuccess } from "../hooks/useSuccess";
 
+interface CreateSessionDTO {
+  username: string;
+  password: string;
+}
+
 export default function SignInPage() {
   const [accessToken, setAccessToken] = useState<string | null>();
   const [loading, setLoading] = useState(false);
@@ -44,7 +49,7 @@ export default function SignInPage() {
     setError(null);
 
     const formData = new FormData(event.target as HTMLFormElement);
-    const data = Object.fromEntries(formData);
+    const data = Object.fromEntries(formData) as unknown as CreateSessionDTO;
 
     api
       .post("/sessions", { data })
