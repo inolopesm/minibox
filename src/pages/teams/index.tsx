@@ -46,7 +46,7 @@ export default function TeamsPage() {
       <NextHead>
         <title>Equipes | Minibox</title>
       </NextHead>
-      <div className="bg-gray-100 min-h-screen py-10">
+      <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow grid gap-4">
           <div className="flex justify-between items-center gap-2">
             <Button variant="secondary" asChild>
@@ -83,17 +83,17 @@ export default function TeamsPage() {
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
                   <tr>
-                    <th className="px-6 py-3">#</th>
-                    <th className="px-6 py-3">Nome</th>
+                    <th className="px-3 py-1.5">#</th>
+                    <th className="px-3 py-1.5">Nome</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teams.map((team) => (
                     <tr key={team.id}>
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
                         {team.id}
                       </td>
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
                         <Link asChild>
                           <NextLink href={`/teams/${team.id}`}>
                             {team.name}

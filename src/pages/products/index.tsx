@@ -84,25 +84,25 @@ export default function ProductsPage() {
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
                   <tr>
-                    <th className="px-6 py-3">#</th>
-                    <th className="px-6 py-3">Nome</th>
-                    <th className="px-6 py-3">Valor</th>
+                    <th className="px-3 py-1.5">#</th>
+                    <th className="px-3 py-1.5">Nome</th>
+                    <th className="px-3 py-1.5">Valor</th>
                   </tr>
                 </thead>
                 <tbody>
                   {products.map((product) => (
                     <tr key={product.id}>
-                      <td className="px-6 py-4 font-medium text-gray-900">
+                      <td className="px-3 py-2 font-medium text-gray-900">
                         {product.id}
                       </td>
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
                         <Link asChild>
                           <NextLink href={`/products/${product.id}`}>
                             {product.name}
                           </NextLink>
                         </Link>
                       </td>
-                      <td className="px-6 py-4 text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",

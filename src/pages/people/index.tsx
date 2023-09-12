@@ -90,25 +90,25 @@ export default function PeoplePage() {
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
                   <tr>
-                    <th className="px-6 py-3">#</th>
-                    <th className="px-6 py-3">Nome</th>
-                    <th className="px-6 py-3">Equipe</th>
+                    <th className="px-3 py-1.5">#</th>
+                    <th className="px-3 py-1.5">Nome</th>
+                    <th className="px-3 py-1.5">Equipe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {people.map((person) => (
                     <tr key={person.id}>
-                      <td className="px-6 py-4 font-medium text-gray-900">
+                      <td className="px-3 py-2 font-medium text-gray-900">
                         {person.id}
                       </td>
-                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
                         <Link asChild>
                           <NextLink href={`/people/${person.id}`}>
                             {person.name}
                           </NextLink>
                         </Link>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-3 py-2 whitespace-nowrap">
                         {person.team.name}
                       </td>
                     </tr>
