@@ -15,6 +15,7 @@ export type InputProps = Partial<
     | "required"
     | "title"
     | "value"
+    | "autocapitalize"
   >
 > & {
   onTextChange?: (value: string) => void;
