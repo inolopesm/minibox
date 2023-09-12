@@ -56,7 +56,7 @@ export default function CreateProductPage() {
       <NextHead>
         <title>Criar Produto | Minibox</title>
       </NextHead>
-      <div className="bg-gray-100 min-h-screen py-10">
+      <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
