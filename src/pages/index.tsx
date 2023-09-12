@@ -1,11 +1,12 @@
+import { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import BuildingOfficeIcon from "@heroicons/react/24/outline/BuildingOfficeIcon";
-import { useEffect, useState } from "react";
 import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
+import ReceiptPercentIcon from "@heroicons/react/24/outline/ReceiptPercentIcon";
 import { Button } from "../components/Button";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { JWT } from "../utils/JWT";
@@ -76,6 +77,13 @@ export default function HomePage() {
             >
               <UserGroupIcon className="h-12" />
               Pessoas
+            </NextLink>
+            <NextLink
+              className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
+              href="/invoices"
+            >
+              <ReceiptPercentIcon className="h-12" />
+              Faturas
             </NextLink>
           </div>
         </div>
