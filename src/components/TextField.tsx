@@ -1,6 +1,6 @@
 import { useId } from "react";
 import { Label } from "./Label";
-import { Input, InputProps } from "./Input";
+import { Input, type InputProps } from "./Input";
 import { HelperText } from "./HelperText";
 
 export type TextFieldProps = Omit<InputProps, "id"> & {

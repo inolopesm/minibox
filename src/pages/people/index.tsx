@@ -41,7 +41,7 @@ export default function PeoplePage() {
       const searchParams = new URLSearchParams({ name: debouncedName });
 
       api
-        .get(`/people?${searchParams}`, { accessToken })
+        .get(`/people?${searchParams.toString()}`, { accessToken })
         .then((response) => setPeople(response.data))
         .catch((err) => setError(err))
         .finally(() => setLoading(false));

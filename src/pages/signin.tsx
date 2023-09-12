@@ -29,7 +29,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (typeof accessToken === "string") {
-      router.push("/");
+      void router.push("/");
     }
   }, [accessToken, router]);
 
@@ -41,7 +41,7 @@ export default function SignInPage() {
       if (process.env.NODE_ENV === "production") cookie.push("Secure");
       document.cookie = cookie.join("; ");
       setSuccess(true);
-      router.push("/");
+      void router.push("/");
     };
 
     event.preventDefault();

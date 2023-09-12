@@ -33,7 +33,7 @@ export default function HomePage() {
 
     if (confirmed) {
       document.cookie = "accessToken=; Max-Age=0; path=/";
-      router.push("/signin");
+      void router.push("/signin");
     }
   };
 

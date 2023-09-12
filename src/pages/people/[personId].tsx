@@ -48,14 +48,14 @@ export default function EditPersonPage() {
 
       const handleSuccess = (
         { data: pData }: { data: Person },
-        { data: tData }: { data: Team[] }
+        { data: tData }: { data: Team[] },
       ) => {
         setPerson(pData);
         setTeams(tData);
       };
 
       Promise.all([
-        api.get(`/people/${router.query.personId}`, { accessToken }),
+        api.get(`/people/${String(router.query.personId)}`, { accessToken }),
         api.get("/teams", { accessToken }),
       ])
         .then(([pResponse, tResponse]) => handleSuccess(pResponse, tResponse))
@@ -65,10 +65,10 @@ export default function EditPersonPage() {
   }, [accessToken, router.isReady, router.query.personId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string") {
+    if (typeof accessToken === "string" && person !== null) {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/people");
+        void router.push("/people");
       };
 
       event.preventDefault();
@@ -80,7 +80,7 @@ export default function EditPersonPage() {
       const data: UpdatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
 
       api
-        .put(`/people/${router.query.personId}`, { data, accessToken })
+        .put(`/people/${person.id}`, { data, accessToken })
         .then(() => handleSuccess())
         .catch((err) => setError(err))
         .finally(() => setLoading(false));

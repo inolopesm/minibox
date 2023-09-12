@@ -7,7 +7,6 @@ import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
@@ -34,7 +33,7 @@ export default function EditTeamPage() {
       setLoading(true);
 
       api
-        .get(`/teams/${router.query.teamId}`, { accessToken })
+        .get(`/teams/${String(router.query.teamId)}`, { accessToken })
         .then((response) => setTeam(response.data))
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
@@ -42,10 +41,10 @@ export default function EditTeamPage() {
   }, [accessToken, router.isReady, router.query.teamId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string") {
+    if (typeof accessToken === "string" && team !== null) {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/teams");
+        void router.push("/teams");
       };
 
       event.preventDefault();
@@ -56,7 +55,7 @@ export default function EditTeamPage() {
       const data = Object.fromEntries(formData) as unknown as UpdateTeamDTO;
 
       api
-        .put(`/teams/${router.query.teamId}`, { data, accessToken })
+        .put(`/teams/${team.id}`, { data, accessToken })
         .then(() => handleSuccess())
         .catch((err) => setError(err))
         .finally(() => setLoading(false));

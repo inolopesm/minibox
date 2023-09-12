@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -31,7 +31,7 @@ export default function SignUpPage() {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     const handleSuccess = () => {
       setSuccess(true);
-      router.push("/signin");
+      void router.push("/signin");
     };
 
     event.preventDefault();

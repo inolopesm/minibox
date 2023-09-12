@@ -26,7 +26,7 @@ export default function CreateTeamPage() {
     if (typeof accessToken === "string") {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/teams");
+        void router.push("/teams");
       };
 
       event.preventDefault();

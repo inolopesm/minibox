@@ -35,7 +35,7 @@ export default function ProductsPage() {
       const searchParams = new URLSearchParams({ name: debouncedName });
 
       api
-        .get(`/products?${searchParams}`, { accessToken })
+        .get(`/products?${searchParams.toString()}`, { accessToken })
         .then((response) => setProducts(response.data))
         .catch((err) => setError(err))
         .finally(() => setLoading(false));

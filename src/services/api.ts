@@ -22,7 +22,7 @@ export class API {
 
   async request(
     path: string,
-    { method, data, accessToken, apiKey }: RequestOptions = {}
+    { method, data, accessToken, apiKey }: RequestOptions = {},
   ) {
     const init: {
       method?: string;
@@ -35,19 +35,19 @@ export class API {
     if (accessToken) init.headers.set("x-access-token", accessToken);
     if (apiKey) init.headers.set("x-api-key", apiKey);
 
-    return this.httpClient.request(path, init);
+    return await this.httpClient.request(path, init);
   }
 
-  get(path: string, options: Omit<RequestOptions, "method"> = {}) {
-    return this.request(path, { method: "GET", ...options });
+  async get(path: string, options: Omit<RequestOptions, "method"> = {}) {
+    return await this.request(path, { method: "GET", ...options });
   }
 
-  post(path: string, options: Omit<RequestOptions, "method"> = {}) {
-    return this.request(path, { method: "POST", ...options });
+  async post(path: string, options: Omit<RequestOptions, "method"> = {}) {
+    return await this.request(path, { method: "POST", ...options });
   }
 
-  put(path: string, options: Omit<RequestOptions, "method"> = {}) {
-    return this.request(path, { method: "PUT", ...options });
+  async put(path: string, options: Omit<RequestOptions, "method"> = {}) {
+    return await this.request(path, { method: "PUT", ...options });
   }
 }
 

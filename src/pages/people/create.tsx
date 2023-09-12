@@ -51,7 +51,7 @@ export default function CreatePersonPage() {
     if (typeof accessToken === "string") {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/people");
+        void router.push("/people");
       };
 
       event.preventDefault();

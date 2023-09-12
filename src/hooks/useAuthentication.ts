@@ -11,7 +11,7 @@ export function useAuthentication(router: ReturnType<typeof useRouter>) {
 
   useEffect(() => {
     if (accessToken === null) {
-      router.push("/signin");
+      void router.push("/signin");
     }
   }, [accessToken, router]);
 

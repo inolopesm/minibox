@@ -34,7 +34,7 @@ export default function TeamsPage() {
       const searchParams = new URLSearchParams({ name: debouncedName });
 
       api
-        .get(`/teams?${searchParams}`, { accessToken })
+        .get(`/teams?${searchParams.toString()}`, { accessToken })
         .then((response) => setTeams(response.data))
         .catch((err) => setError(err))
         .finally(() => setLoading(false));

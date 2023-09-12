@@ -32,7 +32,7 @@ export default function CreateProductPage() {
     if (typeof accessToken === "string") {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/products");
+        void router.push("/products");
       };
 
       event.preventDefault();

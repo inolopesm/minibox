@@ -40,7 +40,7 @@ export default function EditProductPage() {
       setLoading(true);
 
       api
-        .get(`/products/${router.query.productId}`, { accessToken })
+        .get(`/products/${String(router.query.productId)}`, { accessToken })
         .then((response) => setProduct(response.data))
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
@@ -48,10 +48,10 @@ export default function EditProductPage() {
   }, [accessToken, router.isReady, router.query.productId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string") {
+    if (typeof accessToken === "string" && product !== null) {
       const handleSuccess = () => {
         setSuccess(true);
-        router.push("/products");
+        void router.push("/products");
       };
 
       event.preventDefault();
@@ -63,7 +63,7 @@ export default function EditProductPage() {
       const data: UpdateProductDTO = { ...o, value: Number(o.value) };
 
       api
-        .put(`/products/${router.query.productId}`, { data, accessToken })
+        .put(`/products/${product.id}`, { data, accessToken })
         .then(() => handleSuccess())
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
