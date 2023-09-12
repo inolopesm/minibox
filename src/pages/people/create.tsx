@@ -6,6 +6,7 @@ import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
+import { SelectField } from "../../components/SelectField";
 import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
@@ -106,15 +107,14 @@ export default function CreatePersonPage() {
               title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
               required
             />
-            <div>
-              <select name="teamId" required>
-                {teams.map((team) => (
-                  <option value={team.id} key={team.id}>
-                    {team.name} #{team.id}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SelectField label="Equipe" name="teamId" required>
+              <option value="">Escolha uma equipe</option>
+              {teams.map((team) => (
+                <option value={team.id} key={team.id}>
+                  {team.name} #{team.id}
+                </option>
+              ))}
+            </SelectField>
             <Button type="submit" disabled={loading || success}>
               Cadastrar
             </Button>

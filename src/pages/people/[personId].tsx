@@ -7,10 +7,10 @@ import { TextField } from "../../components/TextField";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
+import { SelectField } from "../../components/SelectField";
 
 interface Team {
   id: number;
@@ -20,7 +20,7 @@ interface Team {
 interface Person {
   id: number;
   name: string;
-  teamId: string;
+  teamId: number;
 }
 
 interface UpdatePersonFormData {
@@ -115,7 +115,7 @@ export default function EditPersonPage() {
                 Produto editado com sucesso. Redirecionando para a listagem.
               </Alert>
             )}
-            {person !== null && teams.length > 0 && (
+            {person !== null && (
               <>
                 <TextField
                   label="Nome"
@@ -129,15 +129,18 @@ export default function EditPersonPage() {
                   defaultValue={person.name}
                   required
                 />
-                <div>
-                  <select name="teamId" defaultValue={person.teamId} required>
-                    {teams.map((team) => (
-                      <option value={team.id} key={team.id}>
-                        {team.name} #{team.id}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <SelectField label="Equipe" name="teamId" required>
+                  <option value="">Escolha uma equipe</option>
+                  {teams.map((team) => (
+                    <option
+                      value={team.id}
+                      key={team.id}
+                      selected={team.id === person.teamId}
+                    >
+                      {team.name} #{team.id}
+                    </option>
+                  ))}
+                </SelectField>
               </>
             )}
             <Button type="submit" disabled={loading || success}>
