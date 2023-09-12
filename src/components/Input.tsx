@@ -1,6 +1,6 @@
 export type InputProps = Partial<
   Pick<
-    HTMLInputElement,
+    React.InputHTMLAttributes<HTMLInputElement>,
     | "defaultValue"
     | "disabled"
     | "type"
@@ -15,7 +15,7 @@ export type InputProps = Partial<
     | "required"
     | "title"
     | "value"
-    | "autocapitalize"
+    | "autoCapitalize"
   >
 > & {
   onTextChange?: (value: string) => void;

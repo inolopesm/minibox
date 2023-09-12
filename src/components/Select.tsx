@@ -1,7 +1,10 @@
 import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 
 export type SelectProps = Partial<
-  Pick<HTMLSelectElement, "disabled" | "id" | "name" | "required" | "title">
+  Pick<
+    React.SelectHTMLAttributes<HTMLSelectElement>,
+    "disabled" | "id" | "name" | "required" | "title"
+  >
 > & {
   onValueChange?: (value: string) => void;
   children?: React.ReactNode;
