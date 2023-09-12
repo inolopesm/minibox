@@ -86,7 +86,7 @@ export default function SignUpPage() {
               disabled={loading || success}
               title="A chave secreta é obrigatória"
               helperText="Não possui? Contate o administrador"
-              autocapitalize="off"
+              autoCapitalize="off"
               required
             />
             <TextField
@@ -98,7 +98,7 @@ export default function SignUpPage() {
               pattern="[a-z]{1,24}"
               placeholder="fulano"
               title="O usuário é obrigatório e deve ser composto por até 24 letras minúsculas"
-              autocapitalize="off"
+              autoCapitalize="off"
               required
             />
             <TextField
@@ -110,7 +110,7 @@ export default function SignUpPage() {
               maxLength={24}
               pattern="[A-Za-z0-9]{8,24}"
               title="A senha é obrigatória e deve ser composta de 8 até 24 letras maiúsculas, minúsculas ou números"
-              autocapitalize="off"
+              autoCapitalize="off"
               required
             />
             <TextField
@@ -122,7 +122,7 @@ export default function SignUpPage() {
               maxLength={24}
               pattern="[A-Za-z0-9]{8,24}"
               title="A confirmação da senha é obrigatória e deve ser igual a senha informada acima"
-              autocapitalize="off"
+              autoCapitalize="off"
               required
             />
             <Button type="submit" disabled={loading || success}>

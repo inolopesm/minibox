@@ -84,7 +84,7 @@ export default function SignInPage() {
               type="text"
               name="username"
               disabled={loading || success}
-              autocapitalize="off"
+              autoCapitalize="off"
             />
             <TextField
               label="Senha"
