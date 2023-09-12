@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -8,24 +8,26 @@ import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
 import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+import { useSuccess } from "../../hooks/useSuccess";
+
+interface Team {
+  id: number;
+  name: string;
+}
+
+interface UpdateTeamDTO {
+  name: string;
+}
 
 export default function EditTeamPage() {
-  const [accessToken, setAccessToken] = useState();
-  const [team, setTeam] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
+  const { accessToken } = useAuthentication(router);
+  const [team, setTeam] = useState<Team | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
     if (typeof accessToken === "string" && router.isReady) {
@@ -37,38 +39,29 @@ export default function EditTeamPage() {
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
     }
-  }, [accessToken, router.isReady, router.query.teamId]);
+  }, [accessToken, router.isReady, router.query.teamId, setError]);
 
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (typeof accessToken === "string") {
+      const handleSuccess = () => {
+        setSuccess(true);
+        router.push("/teams");
+      };
+
+      event.preventDefault();
+      setLoading(true);
+      setError(null);
+
+      const formData = new FormData(event.target as HTMLFormElement);
+      const data = Object.fromEntries(formData) as unknown as UpdateTeamDTO;
+
+      api
+        .put(`/teams/${router.query.teamId}`, { data, accessToken })
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
-    const handleSuccess = () => {
-      setSuccess(true);
-      router.push("/teams");
-    };
-
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const data = Object.fromEntries(new FormData(event.target));
-
-    api
-      .put(`/teams/${team.id}`, { data, accessToken })
-      .then(() => handleSuccess())
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
-  }
+  };
 
   return (
     <>
@@ -83,14 +76,9 @@ export default function EditTeamPage() {
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
               </NextLink>
             </Button>
-            <div className="font-bold text-gray-900 text-xl">
-              Editar Equipe
-            </div>
+            <div className="font-bold text-gray-900 text-xl">Editar Equipe</div>
           </div>
-          <form
-            className="grid gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
@@ -123,6 +111,4 @@ export default function EditTeamPage() {
       </div>
     </>
   );
-
 }
-

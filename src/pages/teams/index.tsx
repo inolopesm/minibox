@@ -10,26 +10,22 @@ import { TextField } from "../../components/TextField";
 import { Alert } from "../../components/Alert";
 import { useDebounce } from "../../hooks/useDebounce";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+
+interface Team {
+  id: number;
+  name: string;
+}
 
 export default function TeamsPage() {
-  const [accessToken, setAccessToken] = useState();
+  const router = useRouter();
+  const { accessToken } = useAuthentication(router);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [teams, setTeams] = useState([]);
+  const { error, setError } = useError();
+  const [teams, setTeams] = useState<Team[]>([]);
   const debouncedName = useDebounce(name);
-  const router = useRouter();
-
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
 
   useEffect(() => {
     if (typeof accessToken === "string") {
@@ -43,7 +39,7 @@ export default function TeamsPage() {
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
     }
-  }, [accessToken, debouncedName]);
+  }, [accessToken, debouncedName, setError]);
 
   return (
     <>
@@ -58,9 +54,7 @@ export default function TeamsPage() {
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
               </NextLink>
             </Button>
-            <div className="font-bold text-gray-900 text-xl">
-              Equipes
-            </div>
+            <div className="font-bold text-gray-900 text-xl">Equipes</div>
             <div>
               <Button variant="secondary" asChild>
                 <NextLink href="/teams/create">
@@ -84,41 +78,36 @@ export default function TeamsPage() {
             onTextChange={setName}
           />
 
-          {!loading
-            ? (
-                <div className="relative overflow-x-auto">
-                  <table className="w-full text-sm text-left text-gray-500">
-                    <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
-                      <tr>
-                        <th className="px-6 py-3">#</th>
-                        <th className="px-6 py-3">Nome</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {teams.map((team) => (
-                        <tr key={team.id}>
-                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            {team.id}
-                          </td>
-                          <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            <Link asChild>
-                              <NextLink href={`/teams/${team.id}`}>
-                                {team.name}
-                              </NextLink>
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )
-              : (
-                <div className="text-center text-gray-500">
-                  Carregando...
-                </div>
-              )
-            }
+          {!loading ? (
+            <div className="relative overflow-x-auto">
+              <table className="w-full text-sm text-left text-gray-500">
+                <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
+                  <tr>
+                    <th className="px-6 py-3">#</th>
+                    <th className="px-6 py-3">Nome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teams.map((team) => (
+                    <tr key={team.id}>
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        {team.id}
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        <Link asChild>
+                          <NextLink href={`/teams/${team.id}`}>
+                            {team.name}
+                          </NextLink>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center text-gray-500">Carregando...</div>
+          )}
         </div>
       </div>
     </>

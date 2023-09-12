@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -7,54 +7,41 @@ import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+import { useSuccess } from "../../hooks/useSuccess";
+
+interface CreateTeamDTO {
+  name: string;
+}
 
 export default function CreateTeamPage() {
-  const [accessToken, setAccessToken] = useState();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const { accessToken } = useAuthentication(router);
+  const [loading, setLoading] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
 
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (typeof accessToken === "string") {
+      const handleSuccess = () => {
+        setSuccess(true);
+        router.push("/teams");
+      };
 
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
+      event.preventDefault();
+      setLoading(true);
+      setError(null);
+
+      const formData = new FormData(event.target as HTMLFormElement);
+      const data = Object.fromEntries(formData) as unknown as CreateTeamDTO;
+
+      api
+        .post("/teams", { data, accessToken })
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
     }
-  }, [accessToken, router]);
-
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
-    const handleSuccess = () => {
-      setSuccess(true);
-      router.push("/teams");
-    };
-
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const data = Object.fromEntries(new FormData(event.target));
-
-    api
-      .post("/teams", { data, accessToken })
-      .then(() => handleSuccess())
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
   };
 
   return (
@@ -70,14 +57,9 @@ export default function CreateTeamPage() {
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
               </NextLink>
             </Button>
-            <div className="font-bold text-gray-900 text-xl">
-              Criar Equipe
-            </div>
+            <div className="font-bold text-gray-900 text-xl">Criar Equipe</div>
           </div>
-          <form
-            className="grid gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
