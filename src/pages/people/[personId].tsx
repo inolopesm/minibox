@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -8,31 +8,48 @@ import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
 import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+import { useSuccess } from "../../hooks/useSuccess";
+
+interface Team {
+  id: number;
+  name: string;
+}
+
+interface Person {
+  id: number;
+  name: string;
+  teamId: string;
+}
+
+interface UpdatePersonFormData {
+  name: string;
+  teamId: string;
+}
+
+interface UpdatePersonDTO {
+  name: string;
+  teamId: number;
+}
 
 export default function EditPersonPage() {
-  const [accessToken, setAccessToken] = useState();
-  const [person, setPerson] = useState(null);
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
+  const { accessToken } = useAuthentication(router);
+  const [person, setPerson] = useState<Person | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
     if (typeof accessToken === "string" && router.isReady) {
       setLoading(true);
 
-      const handleSuccess = ({ data: pData }, { data: tData }) => {
+      const handleSuccess = (
+        { data: pData }: { data: Person },
+        { data: tData }: { data: Team[] }
+      ) => {
         setPerson(pData);
         setTeams(tData);
       };
@@ -45,38 +62,29 @@ export default function EditPersonPage() {
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
     }
-  }, [accessToken, router.isReady, router.query.personId]);
+  }, [accessToken, router.isReady, router.query.personId, setError]);
 
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (typeof accessToken === "string") {
+      const handleSuccess = () => {
+        setSuccess(true);
+        router.push("/people");
+      };
+
+      event.preventDefault();
+      setLoading(true);
+      setError(null);
+
+      const formData = new FormData(event.target as HTMLFormElement);
+      const o = Object.fromEntries(formData) as unknown as UpdatePersonFormData;
+      const data: UpdatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
+
+      api
+        .put(`/people/${router.query.personId}`, { data, accessToken })
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
-
-  const handleSubmit = (event) => {
-    const handleSuccess = () => {
-      setSuccess(true);
-      router.push("/people");
-    };
-
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const data = Object.fromEntries(new FormData(event.target));
-    data.value = Number.parseInt(data.value, 10);
-
-    api
-      .put(`/people/${router.query.personId}`, { data, accessToken })
-      .then(() => handleSuccess())
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
   };
 
   return (
@@ -96,10 +104,7 @@ export default function EditPersonPage() {
               Editar Produto
             </div>
           </div>
-          <form
-            className="grid gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
@@ -143,6 +148,4 @@ export default function EditPersonPage() {
       </div>
     </>
   );
-
 }
-

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
@@ -7,37 +7,32 @@ import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
 import { api } from "../../services/api";
-import { Cookie } from "../../utils/Cookie";
+import { useAuthentication } from "../../hooks/useAuthentication";
+import { useError } from "../../hooks/useError";
+import { useSuccess } from "../../hooks/useSuccess";
+
+interface Team {
+  id: number;
+  name: string;
+}
+
+interface CreatePersonFormData {
+  name: string;
+  teamId: string;
+}
+
+interface CreatePersonDTO {
+  name: string;
+  teamId: number;
+}
 
 export default function CreatePersonPage() {
-  const [accessToken, setAccessToken] = useState();
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setAccessToken(Cookie.get("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    if (accessToken === null) {
-      router.push("/signin");
-    }
-  }, [accessToken, router]);
-
-  useEffect(() => {
-    if (error) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      window.scroll({ left: 0, top: 0 });
-    }
-  }, [success]);
+  const { accessToken } = useAuthentication(router);
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { error, setError } = useError();
+  const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
     if (typeof accessToken === "string") {
@@ -49,26 +44,29 @@ export default function CreatePersonPage() {
         .catch((err) => setError(err))
         .finally(() => setLoading(false));
     }
-  }, [accessToken]);
+  }, [accessToken, setError]);
 
-  const handleSubmit = (event) => {
-    const handleSuccess = () => {
-      setSuccess(true);
-      router.push("/people");
-    };
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    if (typeof accessToken === "string") {
+      const handleSuccess = () => {
+        setSuccess(true);
+        router.push("/people");
+      };
 
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
+      event.preventDefault();
+      setLoading(true);
+      setError(null);
 
-    const data = Object.fromEntries(new FormData(event.target));
-    data.teamId = Number.parseInt(data.teamId, 10);
+      const formData = new FormData(event.target as HTMLFormElement);
+      const o = Object.fromEntries(formData) as unknown as CreatePersonFormData;
+      const data: CreatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
 
-    api
-      .post("/people", { data, accessToken })
-      .then(() => handleSuccess())
-      .catch((err) => setError(err))
-      .finally(() => setLoading(false));
+      api
+        .post("/people", { data, accessToken })
+        .then(() => handleSuccess())
+        .catch((err) => setError(err))
+        .finally(() => setLoading(false));
+    }
   };
 
   return (
@@ -84,14 +82,9 @@ export default function CreatePersonPage() {
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
               </NextLink>
             </Button>
-            <div className="font-bold text-gray-900 text-xl">
-              Criar Pessoa
-            </div>
+            <div className="font-bold text-gray-900 text-xl">Criar Pessoa</div>
           </div>
-          <form
-            className="grid gap-4"
-            onSubmit={handleSubmit}
-          >
+          <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
               <Alert variant="error" onClose={() => setError(null)}>
                 {error.message}
