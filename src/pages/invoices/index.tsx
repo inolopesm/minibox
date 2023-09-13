@@ -97,6 +97,8 @@ export default function InvoicesPage() {
                     <th className="px-3 py-1.5">Equipe</th>
                     <th className="px-3 py-1.5">Pessoa</th>
                     <th className="px-3 py-1.5">Total</th>
+                    <th className="px-3 py-1.5 whitespace-nowrap">Criado em</th>
+                    <th className="px-3 py-1.5 whitespace-nowrap">Pago em</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -127,6 +129,25 @@ export default function InvoicesPage() {
                             0,
                           ) / 100,
                         )}
+                      </td>
+                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                        {new Intl.DateTimeFormat("pt-BR", {
+                          year: "2-digit",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(invoice.createdAt)}
+                      </td>
+                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                        {invoice.paidAt !== null &&
+                          new Intl.DateTimeFormat("pt-BR", {
+                            year: "2-digit",
+                            month: "2-digit",
+                            day: "2-digit",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }).format(invoice.paidAt)}
                       </td>
                     </tr>
                   ))}
