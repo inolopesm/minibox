@@ -122,7 +122,7 @@ export default function EditProductPage() {
                   helperText="Em centavos para ajudar a realizar cálculos precisos posteriormente"
                   title="O valor é obrigatório e deve ser um número entre 1 e 99999"
                   placeholder="350"
-                  defaultValue={product.value + ""}
+                  defaultValue={product.value}
                   required
                 />
               </>
