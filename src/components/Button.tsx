@@ -24,7 +24,7 @@ export function Button({
         // prettier-ignore
         new ClassNames()
           // prettier-ignore
-          .add("inline-block font-medium px-5 py-2.5 border rounded text-sm disabled:cursor-not-allowed")
+          .add("font-medium px-5 py-2.5 border rounded text-sm disabled:cursor-not-allowed flex justify-center")
           // prettier-ignore
           .addIf(variant === "primary", "bg-gray-800 text-white border-gray-900 disabled:bg-gray-400 hover:bg-gray-900")
           // prettier-ignore
