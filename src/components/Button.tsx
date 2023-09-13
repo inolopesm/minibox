@@ -28,7 +28,7 @@ export function Button({
           // prettier-ignore
           .addIf(variant === "primary", "bg-gray-800 text-white border-gray-900 disabled:bg-gray-400 hover:bg-gray-900")
           // prettier-ignore
-          .addIf(variant === "secondary", "bg-white text-gray-900 border-gray-300 disabled:bg-gray-400 hover:bg-gray-100")
+          .addIf(variant === "secondary", "bg-white text-gray-900 border-gray-300 disabled:bg-gray-200 hover:bg-gray-100")
           .toString()
       }
       {...props}
