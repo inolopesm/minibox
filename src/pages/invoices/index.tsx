@@ -10,6 +10,7 @@ import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { ClassNames } from "../../utils/ClassNames";
+import { Select } from "../../components/Select";
 
 interface Team {
   id: number;
@@ -44,20 +45,75 @@ export default function InvoicesPage() {
   const router = useRouter();
   const { accessToken } = useAuthentication(router);
   const { error, setError } = useError();
-  const [loading, setLoading] = useState(false);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+
+  const [invoice, setInvoice] = useState<{
+    items: Invoice[];
+    loading: boolean;
+  }>({
+    items: [],
+    loading: false,
+  });
+
+  const [team, setTeam] = useState<{
+    items: Team[];
+    loading: boolean;
+    id: string;
+  }>({
+    items: [],
+    loading: false,
+    id: "",
+  });
+
+  const [person, setPerson] = useState<{
+    items: Person[];
+    loading: boolean;
+    id: string;
+  }>({
+    items: [],
+    loading: false,
+    id: "",
+  });
 
   useEffect(() => {
-    if (typeof accessToken === "string") {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setInvoice((i) => ({ ...i, loading: true }));
 
-      api
-        .get("/invoices", { accessToken })
-        .then((response) => setInvoices(response.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    const searchParams = new URLSearchParams();
+    if (team.id !== "") searchParams.set("teamId", team.id);
+    if (person.id !== "") searchParams.set("personId", person.id);
+
+    api
+      .get(`/invoices?${searchParams.toString()}`, { accessToken })
+      .then(({ data }) => setInvoice((i) => ({ ...i, items: data })))
+      .catch((err) => setError(err))
+      .finally(() => setInvoice((i) => ({ ...i, loading: false })));
+  }, [accessToken, team.id, person.id, setError]);
+
+  useEffect(() => {
+    if (typeof accessToken !== "string") return;
+    setTeam((t) => ({ ...t, loading: true }));
+    setPerson((p) => ({ ...p, id: "" }));
+
+    api
+      .get("/teams", { accessToken })
+      .then(({ data }) => setTeam((t) => ({ ...t, items: data })))
+      .catch((err) => setError(err))
+      .finally(() => setTeam((t) => ({ ...t, loading: false })));
   }, [accessToken, setError]);
+
+  useEffect(() => {
+    if (typeof accessToken !== "string") return;
+    setPerson((p) => ({ ...p, loading: true }));
+
+    const searchParams = new URLSearchParams();
+    if (team.id !== "") searchParams.set("teamId", team.id);
+
+    api
+      .get(`/people?${searchParams.toString()}`, { accessToken })
+      .then(({ data }) => setPerson((p) => ({ ...p, items: data })))
+      .catch((err) => setError(err))
+      .finally(() => setPerson((p) => ({ ...p, loading: false })));
+  }, [accessToken, team.id, setError]);
 
   return (
     <>
@@ -65,7 +121,7 @@ export default function InvoicesPage() {
         <title>Faturas | Minibox</title>
       </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
-        <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow grid gap-4">
+        <div className="bg-white border border-gray-200 max-w-2xl mx-auto p-6 rounded shadow grid gap-4">
           <div className="flex justify-between items-center gap-2">
             <Button variant="secondary" asChild>
               <NextLink href="/">
@@ -88,7 +144,32 @@ export default function InvoicesPage() {
             </Alert>
           )}
 
-          {!loading ? (
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Select
+              value={team.id}
+              onValueChange={(id) => setTeam((t) => ({ ...t, id }))}
+            >
+              <option value="">Todas as equipes</option>
+              {team.items.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </Select>
+            <Select
+              value={person.id}
+              onValueChange={(id) => setPerson((p) => ({ ...p, id }))}
+            >
+              <option value="">Todas as pessoas</option>
+              {person.items.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          {!invoice.loading ? (
             <div className="relative overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
@@ -102,7 +183,7 @@ export default function InvoicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoices.map((invoice) => (
+                  {invoice.items.map((invoice) => (
                     <tr key={invoice.id}>
                       <td className="px-3 py-2 font-medium text-gray-900">
                         {invoice.id}
