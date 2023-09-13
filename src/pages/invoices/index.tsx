@@ -9,6 +9,7 @@ import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
+import { ClassNames } from "../../utils/ClassNames";
 
 interface Team {
   id: number;
@@ -93,6 +94,7 @@ export default function InvoicesPage() {
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
                   <tr>
                     <th className="px-3 py-1.5">#</th>
+                    <th className="px-3 py-1.5">Equipe</th>
                     <th className="px-3 py-1.5">Pessoa</th>
                     <th className="px-3 py-1.5">Total</th>
                   </tr>
@@ -103,8 +105,17 @@ export default function InvoicesPage() {
                       <td className="px-3 py-2 font-medium text-gray-900">
                         {invoice.id}
                       </td>
-                      <td className="px-3 py-2 font-medium text-gray-900 whitespace-nowrap">
-                        {invoice.person.name} #{invoice.person.id}
+                      <td className="px-3 py-2 font-medium text-gray-900">
+                        {invoice.person.team.name}
+                      </td>
+                      <td
+                        className={new ClassNames()
+                          .add("px-3 py-2 font-medium whitespace-nowrap")
+                          .addIf(invoice.paidAt !== null, "text-green-900")
+                          .addIf(invoice.paidAt === null, "text-red-900")
+                          .toString()}
+                      >
+                        {invoice.person.name}
                       </td>
                       <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
                         {new Intl.NumberFormat("pt-BR", {
