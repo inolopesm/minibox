@@ -12,6 +12,7 @@ import { useDebounce } from "../../hooks/useDebounce";
 import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
+import { SelectField } from "../../components/SelectField";
 
 interface Team {
   id: number;
@@ -28,25 +29,56 @@ interface Person {
 export default function PeoplePage() {
   const router = useRouter();
   const { accessToken } = useAuthentication(router);
+
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const { error, setError } = useError();
-  const [people, setPeople] = useState<Person[]>([]);
   const debouncedName = useDebounce(name);
 
+  const { error, setError } = useError();
+
+  const [team, setTeam] = useState<{
+    items: Team[];
+    loading: boolean;
+    id: string;
+  }>({
+    items: [],
+    loading: false,
+    id: "",
+  });
+
+  const [person, setPerson] = useState<{
+    items: Person[];
+    loading: boolean;
+    id: string;
+  }>({
+    items: [],
+    loading: false,
+    id: "",
+  });
+
   useEffect(() => {
-    if (typeof accessToken === "string") {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setTeam((t) => ({ ...t, loading: true }));
+    setPerson((p) => ({ ...p, id: "" }));
 
-      const searchParams = new URLSearchParams({ name: debouncedName });
+    api
+      .get("/teams", { accessToken })
+      .then(({ data }) => setTeam((t) => ({ ...t, items: data })))
+      .catch((err) => setError(err))
+      .finally(() => setTeam((t) => ({ ...t, loading: false })));
+  }, [accessToken, setError]);
 
-      api
-        .get(`/people?${searchParams.toString()}`, { accessToken })
-        .then((response) => setPeople(response.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
-  }, [accessToken, debouncedName, setError]);
+  useEffect(() => {
+    if (typeof accessToken !== "string") return;
+    setPerson((p) => ({ ...p, loading: true }));
+    const searchParams = new URLSearchParams({ name: debouncedName });
+    if (team.id !== "") searchParams.set("teamId", team.id);
+
+    api
+      .get(`/people?${searchParams.toString()}`, { accessToken })
+      .then(({ data }) => setPerson((p) => ({ ...p, items: data })))
+      .catch((err) => setError(err))
+      .finally(() => setPerson((p) => ({ ...p, loading: false })));
+  }, [accessToken, debouncedName, team.id, setError]);
 
   return (
     <>
@@ -54,7 +86,7 @@ export default function PeoplePage() {
         <title>Pessoas | Minibox</title>
       </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
-        <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow grid gap-4">
+        <div className="bg-white border border-gray-200 max-w-2xl mx-auto p-6 rounded shadow grid gap-4">
           <div className="flex justify-between items-center gap-2">
             <Button variant="secondary" asChild>
               <NextLink href="/">
@@ -77,15 +109,29 @@ export default function PeoplePage() {
             </Alert>
           )}
 
-          <TextField
-            type="search"
-            label="Busca"
-            placeholder="Fulano da Silva"
-            value={name}
-            onTextChange={setName}
-          />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <SelectField
+              label="Equipe"
+              value={team.id}
+              onValueChange={(id) => setTeam((t) => ({ ...t, id }))}
+            >
+              <option value="">Todas as equipes</option>
+              {team.items.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+            </SelectField>
+            <TextField
+              label="Nome"
+              type="search"
+              placeholder="Fulano da Silva"
+              value={name}
+              onTextChange={setName}
+            />
+          </div>
 
-          {!loading ? (
+          {!person.loading ? (
             <div className="relative overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="bg-gray-50 text-gray-700 text-xs uppercase">
@@ -96,7 +142,7 @@ export default function PeoplePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {people.map((person) => (
+                  {person.items.map((person) => (
                     <tr key={person.id}>
                       <td className="px-3 py-2 font-medium text-gray-900">
                         {person.id}
