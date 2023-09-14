@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
+import { useEffect, useState } from "react";
+import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { Link } from "../../components/Link";
 import { TextField } from "../../components/TextField";
-import { Alert } from "../../components/Alert";
-import { useDebounce } from "../../hooks/useDebounce";
-import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
+import { useDebounce } from "../../hooks/useDebounce";
 import { useError } from "../../hooks/useError";
+import { api } from "../../services/api";
 
 interface Team {
   id: number;

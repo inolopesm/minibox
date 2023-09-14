@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import { Button } from "../../components/Button";
+import { useEffect, useState } from "react";
 import { Alert } from "../../components/Alert";
-import { TextField } from "../../components/TextField";
+import { Button } from "../../components/Button";
 import { SelectField } from "../../components/SelectField";
-import { api } from "../../services/api";
+import { TextField } from "../../components/TextField";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
+import { api } from "../../services/api";
 
 interface Team {
   id: number;

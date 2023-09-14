@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
+import BuildingOfficeIcon from "@heroicons/react/24/outline/BuildingOfficeIcon";
+import ReceiptPercentIcon from "@heroicons/react/24/outline/ReceiptPercentIcon";
+import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
+import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import BuildingOfficeIcon from "@heroicons/react/24/outline/BuildingOfficeIcon";
-import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
-import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
-import ArrowLeftOnRectangleIcon from "@heroicons/react/24/outline/ArrowLeftOnRectangleIcon";
-import ReceiptPercentIcon from "@heroicons/react/24/outline/ReceiptPercentIcon";
+import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { JWT } from "../utils/JWT";

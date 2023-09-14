@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
+import EyeIcon from "@heroicons/react/24/outline/EyeIcon";
+import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
 import NextHead from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
-import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
-import EyeIcon from "@heroicons/react/24/outline/EyeIcon";
-import { Button } from "../../components/Button";
+import { useEffect, useState } from "react";
 import { Alert } from "../../components/Alert";
-import { api } from "../../services/api";
+import { Button } from "../../components/Button";
+import { Select } from "../../components/Select";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
-import { Select } from "../../components/Select";
+import { api } from "../../services/api";
 
 interface Team {
   id: number;

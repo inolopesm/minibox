@@ -1,7 +1,7 @@
 import { useId } from "react";
+import { HelperText } from "./HelperText";
 import { Label } from "./Label";
 import { Select, type SelectProps } from "./Select";
-import { HelperText } from "./HelperText";
 
 export type SelectFieldProps = Omit<SelectProps, "id"> & {
   label: string;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { useRouter } from "next/router";
 import { Cookie } from "../utils/Cookie";
+import type { useRouter } from "next/router";
 
 export function useAuthentication(router: ReturnType<typeof useRouter>) {
   const [accessToken, setAccessToken] = useState<string | null>();
