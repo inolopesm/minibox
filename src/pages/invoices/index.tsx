@@ -4,12 +4,13 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
 import PlusIcon from "@heroicons/react/24/outline/PlusIcon";
+import CheckIcon from "@heroicons/react/24/outline/CheckIcon";
+import EyeIcon from "@heroicons/react/24/outline/EyeIcon";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { api } from "../../services/api";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
-import { ClassNames } from "../../utils/ClassNames";
 import { Select } from "../../components/Select";
 
 interface Team {
@@ -178,29 +179,19 @@ export default function InvoicesPage() {
                     <th className="px-3 py-1.5">Equipe</th>
                     <th className="px-3 py-1.5">Pessoa</th>
                     <th className="px-3 py-1.5">Total</th>
-                    <th className="px-3 py-1.5 whitespace-nowrap">Criado em</th>
-                    <th className="px-3 py-1.5 whitespace-nowrap">Pago em</th>
+                    <th className="px-3 py-1.5 text-center">Pago</th>
+                    <th className="px-3 py-1.5 text-center">Ação</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-gray-900">
                   {invoice.items.map((invoice) => (
                     <tr key={invoice.id}>
-                      <td className="px-3 py-2 font-medium text-gray-900">
-                        {invoice.id}
-                      </td>
-                      <td className="px-3 py-2 font-medium text-gray-900">
-                        {invoice.person.team.name}
-                      </td>
-                      <td
-                        className={new ClassNames()
-                          .add("px-3 py-2 font-medium whitespace-nowrap")
-                          .addIf(invoice.paidAt !== null, "text-green-900")
-                          .addIf(invoice.paidAt === null, "text-red-900")
-                          .toString()}
-                      >
+                      <td className="px-3 py-2 font-medium">{invoice.id}</td>
+                      <td className="px-3 py-2">{invoice.person.team.name}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">
                         {invoice.person.name}
                       </td>
-                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                      <td className="px-3 py-2 whitespace-nowrap">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -211,24 +202,17 @@ export default function InvoicesPage() {
                           ) / 100,
                         )}
                       </td>
-                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
-                        {new Intl.DateTimeFormat("pt-BR", {
-                          year: "2-digit",
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }).format(invoice.createdAt)}
+                      <td className="px-3 py-2 text-green-600 text-center">
+                        {invoice.paidAt !== null && (
+                          <CheckIcon className="inline-block h-4" />
+                        )}
                       </td>
-                      <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
-                        {invoice.paidAt !== null &&
-                          new Intl.DateTimeFormat("pt-BR", {
-                            year: "2-digit",
-                            month: "2-digit",
-                            day: "2-digit",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }).format(invoice.paidAt)}
+                      <td className="px-3 py-2 text-center">
+                        <Button variant="secondary" asChild>
+                          <NextLink href={`/invoices/${invoice.id}`}>
+                            <EyeIcon className="h-4" />
+                          </NextLink>
+                        </Button>
                       </td>
                     </tr>
                   ))}
