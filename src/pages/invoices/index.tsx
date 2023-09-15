@@ -12,43 +12,23 @@ import { Select } from "../../components/Select";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { api } from "../../services/api";
+import type { Invoice, InvoiceProduct, Person, Team } from "../../entities";
 
-interface Team {
-  id: number;
-  name: string;
-}
+export type PersonDTO = Person & { team: Team };
 
-interface Person {
-  id: number;
-  name: string;
-  teamId: number;
-
-  team: Team;
-}
-
-interface Product {
-  id: number;
-  name: string;
-  value: number;
-}
-
-interface Invoice {
-  id: number;
-  personId: number;
-  createdAt: number;
-  paidAt: number | null;
-
-  person: Person;
-  products: Product[];
-}
+export type InvoiceDTO = Invoice & {
+  products: InvoiceProduct[];
+  person: PersonDTO;
+};
 
 export default function InvoicesPage() {
   const router = useRouter();
   const { accessToken } = useAuthentication(router);
   const { error, setError } = useError();
+  const [paid, setPaid] = useState("");
 
   const [invoice, setInvoice] = useState<{
-    items: Invoice[];
+    items: InvoiceDTO[];
     loading: boolean;
   }>({
     items: [],
@@ -66,7 +46,7 @@ export default function InvoicesPage() {
   });
 
   const [person, setPerson] = useState<{
-    items: Person[];
+    items: PersonDTO[];
     loading: boolean;
     id: string;
   }>({
@@ -82,13 +62,14 @@ export default function InvoicesPage() {
     const searchParams = new URLSearchParams();
     if (team.id !== "") searchParams.set("teamId", team.id);
     if (person.id !== "") searchParams.set("personId", person.id);
+    if (paid !== "") searchParams.set("paid", paid);
 
     api
       .get(`/invoices?${searchParams.toString()}`, { accessToken })
       .then(({ data }) => setInvoice((i) => ({ ...i, items: data })))
       .catch((err) => setError(err))
       .finally(() => setInvoice((i) => ({ ...i, loading: false })));
-  }, [accessToken, team.id, person.id, setError]);
+  }, [accessToken, team.id, person.id, paid, setError]);
 
   useEffect(() => {
     if (typeof accessToken !== "string") return;
@@ -145,7 +126,7 @@ export default function InvoicesPage() {
             </Alert>
           )}
 
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 sm:grid-cols-3">
             <Select
               value={team.id}
               onValueChange={(id) => setTeam((t) => ({ ...t, id }))}
@@ -167,6 +148,11 @@ export default function InvoicesPage() {
                   {p.name}
                 </option>
               ))}
+            </Select>
+            <Select value={paid} onValueChange={setPaid}>
+              <option value="">Pagos e Não Pagos</option>
+              <option value="true">Pagos</option>
+              <option value="false">Não Pagos</option>
             </Select>
           </div>
 
@@ -217,6 +203,32 @@ export default function InvoicesPage() {
                     </tr>
                   ))}
                 </tbody>
+                <tfoot className="bg-gray-50 text-gray-700 uppercase">
+                  <tr>
+                    <td
+                      className="px-3 py-1.5 font-bold text-right"
+                      colSpan={3}
+                    >
+                      Total
+                    </td>
+                    <td className="px-3 py-1.5 font-bold" colSpan={3}>
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(
+                        invoice.items.reduce(
+                          (total, i) =>
+                            total +
+                            i.products.reduce(
+                              (subtotal, p) => subtotal + p.value,
+                              0,
+                            ),
+                          0,
+                        ) / 100,
+                      )}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           ) : (
