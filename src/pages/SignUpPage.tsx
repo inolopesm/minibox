@@ -1,7 +1,5 @@
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 import { Button } from "../components/Button";
 import { Link } from "../components/Link";
@@ -22,16 +20,16 @@ interface CreateUserDTO {
   password: string;
 }
 
-export default function SignUpPage() {
+export function SignUpPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
-  const router = useRouter();
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     const handleSuccess = () => {
       setSuccess(true);
-      void router.push("/signin");
+      navigate("/signin");
     };
 
     event.preventDefault();
@@ -59,9 +57,6 @@ export default function SignUpPage() {
 
   return (
     <>
-      <NextHead>
-        <title>Registre-se na plataforma | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="font-bold mb-4 text-gray-900 text-xl">
@@ -131,7 +126,7 @@ export default function SignUpPage() {
             <p className="text-center text-sm text-gray-900">
               Já possui uma conta?{" "}
               <Link asChild>
-                <NextLink href="/signin">Entrar</NextLink>
+                <RouterLink to="/signin">Entrar</RouterLink>
               </Link>
             </p>
           </form>
