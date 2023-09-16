@@ -1,7 +1,5 @@
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Alert } from "../components/Alert";
 import { Button } from "../components/Button";
 import { Link } from "../components/Link";
@@ -16,12 +14,12 @@ interface CreateSessionDTO {
   password: string;
 }
 
-export default function SignInPage() {
+export function SignInPage() {
+  const navigate = useNavigate();
   const [accessToken, setAccessToken] = useState<string | null>();
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
-  const router = useRouter();
 
   useEffect(() => {
     setAccessToken(Cookie.get("accessToken"));
@@ -29,19 +27,19 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (typeof accessToken === "string") {
-      void router.push("/");
+      navigate("/");
     }
-  }, [accessToken, router]);
+  }, [accessToken, navigate]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     const handleSuccess = (response: { data: { accessToken: string } }) => {
       const cookie = [`accessToken=${response.data.accessToken}`];
       cookie.push("samesite=strict");
       cookie.push("path=/");
-      if (process.env.NODE_ENV === "production") cookie.push("Secure");
+      if (import.meta.env.PROD) cookie.push("Secure");
       document.cookie = cookie.join("; ");
       setSuccess(true);
-      void router.push("/");
+      navigate("/");
     };
 
     event.preventDefault();
@@ -60,9 +58,6 @@ export default function SignInPage() {
 
   return (
     <>
-      <NextHead>
-        <title>Acesse a plataforma | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="font-bold mb-4 text-gray-900 text-xl">
@@ -98,7 +93,7 @@ export default function SignInPage() {
             <p className="text-center text-sm text-gray-900">
               Ainda não possui uma conta?{" "}
               <Link asChild>
-                <NextLink href="/signup">Registre-se</NextLink>
+                <RouterLink to="/signup">Registre-se</RouterLink>
               </Link>
             </p>
           </form>

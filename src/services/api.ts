@@ -11,10 +11,10 @@ export class API {
   private readonly httpClient: HttpClient;
 
   constructor() {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     if (baseUrl === undefined) {
-      throw new Error("NEXT_PUBLIC_API_BASE_URL is undefined");
+      throw new Error("VITE_API_BASE_URL is undefined");
     }
 
     this.httpClient = new HttpClient(baseUrl);
