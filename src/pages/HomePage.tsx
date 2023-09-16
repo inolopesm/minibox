@@ -3,10 +3,8 @@ import BuildingOfficeIcon from "@heroicons/react/24/outline/BuildingOfficeIcon";
 import ReceiptPercentIcon from "@heroicons/react/24/outline/ReceiptPercentIcon";
 import ShoppingCartIcon from "@heroicons/react/24/outline/ShoppingCartIcon";
 import UserGroupIcon from "@heroicons/react/24/outline/UserGroupIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { useAuthentication } from "../hooks/useAuthentication";
 import { JWT } from "../utils/JWT";
@@ -17,9 +15,9 @@ interface User {
   exp: number;
 }
 
-export default function HomePage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function HomePage() {
+  const navigate = useNavigate();
+  const { accessToken } = useAuthentication();
 
   const [user, setUser] = useState<User | null>(null);
 
@@ -34,15 +32,12 @@ export default function HomePage() {
 
     if (confirmed) {
       document.cookie = "accessToken=; Max-Age=0; path=/";
-      void router.push("/signin");
+      navigate("/signin");
     }
   };
 
   return (
     <>
-      <NextHead>
-        <title>Página Inicial | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="flex justify-between items-center mb-4">
@@ -57,34 +52,34 @@ export default function HomePage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <NextLink
+            <RouterLink
               className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
-              href="/products"
+              to="/products"
             >
               <ShoppingCartIcon className="h-12" />
               Produtos
-            </NextLink>
-            <NextLink
+            </RouterLink>
+            <RouterLink
               className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
-              href="/teams"
+              to="/teams"
             >
               <BuildingOfficeIcon className="h-12" />
               Equipes
-            </NextLink>
-            <NextLink
+            </RouterLink>
+            <RouterLink
               className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
-              href="/people"
+              to="/people"
             >
               <UserGroupIcon className="h-12" />
               Pessoas
-            </NextLink>
-            <NextLink
+            </RouterLink>
+            <RouterLink
               className="grid justify-center px-4 py-8 text-center text-sm font-medium text-gray-900 border border-gray-200 rounded hover:bg-gray-100 hover:text-blue-700"
-              href="/invoices"
+              to="/invoices"
             >
               <ReceiptPercentIcon className="h-12" />
               Faturas
-            </NextLink>
+            </RouterLink>
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Cookie } from "../utils/Cookie";
-import type { useRouter } from "next/router";
 
-export function useAuthentication(router: ReturnType<typeof useRouter>) {
+export function useAuthentication() {
+  const navigate = useNavigate();
   const [accessToken, setAccessToken] = useState<string | null>();
 
   useEffect(() => {
@@ -11,9 +12,9 @@ export function useAuthentication(router: ReturnType<typeof useRouter>) {
 
   useEffect(() => {
     if (accessToken === null) {
-      void router.push("/signin");
+      navigate("/signin");
     }
-  }, [accessToken, router]);
+  }, [accessToken, navigate]);
 
   return { accessToken };
 }
