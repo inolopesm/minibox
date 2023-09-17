@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
@@ -10,16 +8,11 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
 import { api } from "../../services/api";
-
-interface Product {
-  id: number;
-  name: string;
-  value: number;
-}
+import type { Product } from "../../entities";
 
 interface UpdateProductFormData {
   name: string;
-  value: number;
+  value: string;
 }
 
 interface UpdateProductDTO {
@@ -27,31 +20,31 @@ interface UpdateProductDTO {
   value: number;
 }
 
-export default function EditProductPage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function EditProductPage() {
+  const navigate = useNavigate();
+  const { productId } = useParams() as { productId: string };
+  const { accessToken } = useAuthentication();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
-    if (typeof accessToken === "string" && router.isReady) {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setLoading(true);
 
-      api
-        .get(`/products/${String(router.query.productId)}`, { accessToken })
-        .then((response) => setProduct(response.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
-  }, [accessToken, router.isReady, router.query.productId, setError]);
+    api
+      .get(`/products/${productId}`, { accessToken })
+      .then((response) => setProduct(response.data))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [accessToken, productId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     if (typeof accessToken === "string" && product !== null) {
       const handleSuccess = () => {
         setSuccess(true);
-        void router.push("/products");
+        navigate("/products");
       };
 
       event.preventDefault();
@@ -72,16 +65,13 @@ export default function EditProductPage() {
 
   return (
     <>
-      <NextHead>
-        <title>Editar Produto | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/products">
+              <RouterLink to="/products">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">
               Editar Produto
