@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
@@ -15,47 +13,44 @@ interface CreateTeamDTO {
   name: string;
 }
 
-export default function CreateTeamPage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function CreateTeamPage() {
+  const navigate = useNavigate();
+  const { accessToken } = useAuthentication();
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string") {
-      const handleSuccess = () => {
-        setSuccess(true);
-        void router.push("/teams");
-      };
+    if (typeof accessToken !== "string") return;
 
-      event.preventDefault();
-      setLoading(true);
-      setError(null);
+    const handleSuccess = () => {
+      setSuccess(true);
+      navigate("/teams");
+    };
 
-      const formData = new FormData(event.target as HTMLFormElement);
-      const data = Object.fromEntries(formData) as unknown as CreateTeamDTO;
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      api
-        .post("/teams", { data, accessToken })
-        .then(() => handleSuccess())
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data = Object.fromEntries(formData) as unknown as CreateTeamDTO;
+
+    api
+      .post("/teams", { data, accessToken })
+      .then(() => handleSuccess())
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   };
 
   return (
     <>
-      <NextHead>
-        <title>Criar Equipe | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/teams">
+              <RouterLink to="/teams">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">Criar Equipe</div>
           </div>

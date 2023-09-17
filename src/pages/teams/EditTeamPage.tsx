@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
@@ -10,70 +8,64 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
 import { api } from "../../services/api";
-
-interface Team {
-  id: number;
-  name: string;
-}
+import type { Team } from "../../entities";
 
 interface UpdateTeamDTO {
   name: string;
 }
 
-export default function EditTeamPage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function EditTeamPage() {
+  const navigate = useNavigate();
+  const { teamId } = useParams() as { teamId: string };
+  const { accessToken } = useAuthentication();
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
-    if (typeof accessToken === "string" && router.isReady) {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setLoading(true);
 
-      api
-        .get(`/teams/${String(router.query.teamId)}`, { accessToken })
-        .then((response) => setTeam(response.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
-  }, [accessToken, router.isReady, router.query.teamId, setError]);
+    api
+      .get(`/teams/${teamId}`, { accessToken })
+      .then((response) => setTeam(response.data))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [accessToken, teamId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string" && team !== null) {
-      const handleSuccess = () => {
-        setSuccess(true);
-        void router.push("/teams");
-      };
+    if (typeof accessToken !== "string") return;
+    if (team === null) return;
 
-      event.preventDefault();
-      setLoading(true);
-      setError(null);
+    const handleSuccess = () => {
+      setSuccess(true);
+      navigate("/teams");
+    };
 
-      const formData = new FormData(event.target as HTMLFormElement);
-      const data = Object.fromEntries(formData) as unknown as UpdateTeamDTO;
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      api
-        .put(`/teams/${team.id}`, { data, accessToken })
-        .then(() => handleSuccess())
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    const formData = new FormData(event.target as HTMLFormElement);
+    const data = Object.fromEntries(formData) as unknown as UpdateTeamDTO;
+
+    api
+      .put(`/teams/${team.id}`, { data, accessToken })
+      .then(() => handleSuccess())
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   };
 
   return (
     <>
-      <NextHead>
-        <title>Editar Equipe | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/teams">
+              <RouterLink to="/teams">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">Editar Equipe</div>
           </div>
