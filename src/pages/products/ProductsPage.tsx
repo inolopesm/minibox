@@ -10,6 +10,7 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useError } from "../../hooks/useError";
 import { api } from "../../services/api";
+import { Money } from "../../utils/Money";
 import type { Product } from "../../entities";
 
 export function ProductsPage() {
@@ -91,10 +92,7 @@ export function ProductsPage() {
                         </Link>
                       </td>
                       <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(product.value / 100)}
+                        {Money.format(Money.centavosToReal(product.value))}
                       </td>
                     </tr>
                   ))}

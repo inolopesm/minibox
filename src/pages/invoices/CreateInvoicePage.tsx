@@ -10,6 +10,7 @@ import { Select } from "../../components/Select";
 import { SelectField } from "../../components/SelectField";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { api } from "../../services/api";
+import { Money } from "../../utils/Money";
 import type { Person, Product, Team } from "../../entities";
 
 type PersonDTO = Person & { team: Team };
@@ -174,13 +175,6 @@ function reducer(state: State, action: Action): State {
   return state;
 }
 
-const formatMoney = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-}).format;
-
-const convertCentavosToReal = (value: number) => value / 100;
-
 export function CreateInvoicePage() {
   const navigate = useNavigate();
   const { accessToken } = useAuthentication();
@@ -341,7 +335,7 @@ export function CreateInvoicePage() {
                         {state.products.map((product) => (
                           <option value={product.id} key={product.id}>
                             {product.name} -{" "}
-                            {formatMoney(convertCentavosToReal(product.value))}
+                            {Money.format(Money.centavosToReal(product.value))}
                           </option>
                         ))}
                       </Select>

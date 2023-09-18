@@ -9,6 +9,7 @@ import { Button } from "../../components/Button";
 import { Select } from "../../components/Select";
 import { useAuthentication } from "../../hooks/useAuthentication";
 import { api } from "../../services/api";
+import { Money } from "../../utils/Money";
 import type { Invoice, InvoiceProduct, Person, Team } from "../../entities";
 
 type PersonDTO = Person & { team: Team };
@@ -122,13 +123,6 @@ function reducer(state: State, action: Action): State {
 
   return state;
 }
-
-const formatMoney = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-}).format;
-
-const convertCentavosToReal = (value: number) => value / 100;
 
 export function InvoicesPage() {
   const { accessToken } = useAuthentication();
@@ -306,8 +300,8 @@ export function InvoicesPage() {
                         {invoice.person.name}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap">
-                        {formatMoney(
-                          convertCentavosToReal(
+                        {Money.format(
+                          Money.centavosToReal(
                             calculateSubTotal(invoice.products),
                           ),
                         )}
@@ -336,8 +330,8 @@ export function InvoicesPage() {
                       Total
                     </td>
                     <td className="px-3 py-1.5 font-bold" colSpan={3}>
-                      {formatMoney(
-                        convertCentavosToReal(
+                      {Money.format(
+                        Money.centavosToReal(
                           calculateTotal(state.invoice.items),
                         ),
                       )}

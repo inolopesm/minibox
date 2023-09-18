@@ -7,6 +7,8 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
 import { api } from "../../services/api";
+import { DateTime } from "../../utils/DateTime";
+import { Money } from "../../utils/Money";
 import type { Invoice, InvoiceProduct, Person, Team } from "../../entities";
 
 export type InvoiceDTO = Invoice & {
@@ -98,15 +100,7 @@ export function InvoicePage() {
                 <div>
                   {invoice.paidAt !== null ? (
                     <span className="font-medium text-green-800">
-                      Pago em{" "}
-                      {new Intl.DateTimeFormat("pt-BR", {
-                        timeZone: "America/Sao_Paulo",
-                        year: "2-digit",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(invoice.paidAt)}
+                      Pago em {DateTime.format(invoice.paidAt)}
                     </span>
                   ) : (
                     <span className="font-medium text-red-800">A Pagar</span>
@@ -126,10 +120,7 @@ export function InvoicePage() {
                       <tr key={product.id}>
                         <td className="px-3 py-2">{product.name}</td>
                         <td className="px-3 py-2">
-                          {new Intl.NumberFormat("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          }).format(product.value / 100)}
+                          {Money.format(product.value / 100)}
                         </td>
                       </tr>
                     ))}
@@ -138,14 +129,13 @@ export function InvoicePage() {
                     <tr>
                       <td className="px-3 py-1.5 font-bold">Total</td>
                       <td className="px-3 py-1.5 font-bold">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(
-                          invoice.products.reduce<number>(
-                            (t, p) => t + p.value,
-                            0,
-                          ) / 100,
+                        {Money.format(
+                          Money.centavosToReal(
+                            invoice.products.reduce(
+                              (total, product) => total + product.value,
+                              0,
+                            ),
+                          ),
                         )}
                       </td>
                     </tr>
