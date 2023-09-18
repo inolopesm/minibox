@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { useAuthentication } from "../../hooks/useAuthentication";
@@ -16,9 +14,10 @@ export type InvoiceDTO = Invoice & {
   person: Person & { team: Team };
 };
 
-export default function InvoicePage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function InvoicePage() {
+  const navigate = useNavigate();
+  const { invoiceId } = useParams() as { invoiceId: string };
+  const { accessToken } = useAuthentication();
   const [invoice, setInvoice] = useState<InvoiceDTO | null>(null);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
@@ -26,16 +25,14 @@ export default function InvoicePage() {
 
   useEffect(() => {
     if (typeof accessToken !== "string") return;
-    if (!router.isReady) return;
-
     setLoading(true);
 
     api
-      .get(`/invoices/${String(router.query.invoiceId)}`, { accessToken })
+      .get(`/invoices/${invoiceId}`, { accessToken })
       .then(({ data }) => setInvoice(data))
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
-  }, [accessToken, router.isReady, router.query.invoiceId, setError]);
+  }, [accessToken, invoiceId, setError]);
 
   const handlePay = () => {
     if (typeof accessToken !== "string") return;
@@ -46,7 +43,7 @@ export default function InvoicePage() {
 
     const handleSuccess = () => {
       setSuccess(true);
-      void router.push("/invoices");
+      navigate("/invoices");
     };
 
     setLoading(true);
@@ -60,16 +57,13 @@ export default function InvoicePage() {
 
   return (
     <>
-      <NextHead>
-        <title>Exibir Fatura | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/invoices">
+              <RouterLink to="/invoices">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">Exibir Fatura</div>
           </div>

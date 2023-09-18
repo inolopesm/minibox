@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
+import { CreateInvoicePage } from "./pages/invoices/CreateInvoicePage";
+import { InvoicePage } from "./pages/invoices/InvoicePage";
+import { InvoicesPage } from "./pages/invoices/InvoicesPage";
 import { CreatePersonPage } from "./pages/people/CreatePersonPage";
 import { EditPersonPage } from "./pages/people/EditPersonPage";
 import { PeoplePage } from "./pages/people/PeoplePage";
@@ -25,6 +28,9 @@ const router = createBrowserRouter([
   { path: "/people", element: <PeoplePage /> },
   { path: "/people/create", element: <CreatePersonPage /> },
   { path: "/people/:personId", element: <EditPersonPage /> },
+  { path: "/invoices", element: <InvoicesPage /> },
+  { path: "/invoices/create", element: <CreateInvoicePage /> },
+  { path: "/invoices/:invoiceId", element: <InvoicePage /> },
 ]);
 
 export function App() {
