@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { SignInPage } from "./pages/SignInPage";
 import { SignUpPage } from "./pages/SignUpPage";
+import { CreatePersonPage } from "./pages/people/CreatePersonPage";
+import { EditPersonPage } from "./pages/people/EditPersonPage";
+import { PeoplePage } from "./pages/people/PeoplePage";
 import { CreateProductPage } from "./pages/products/CreateProductPage";
 import { EditProductPage } from "./pages/products/EditProductPage";
 import { ProductsPage } from "./pages/products/ProductsPage";
@@ -19,6 +22,9 @@ const router = createBrowserRouter([
   { path: "/teams", element: <TeamsPage /> },
   { path: "/teams/create", element: <CreateTeamPage /> },
   { path: "/teams/:teamId", element: <EditTeamPage /> },
+  { path: "/people", element: <PeoplePage /> },
+  { path: "/people/create", element: <CreatePersonPage /> },
+  { path: "/people/:personId", element: <EditPersonPage /> },
 ]);
 
 export function App() {

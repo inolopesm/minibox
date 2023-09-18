@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { SelectField } from "../../components/SelectField";
@@ -11,11 +9,7 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
 import { api } from "../../services/api";
-
-interface Team {
-  id: number;
-  name: string;
-}
+import type { Team } from "../../entities";
 
 interface CreatePersonFormData {
   name: string;
@@ -27,61 +21,57 @@ interface CreatePersonDTO {
   teamId: number;
 }
 
-export default function CreatePersonPage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function CreatePersonPage() {
+  const navigate = useNavigate();
+  const { accessToken } = useAuthentication();
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(false);
   const { error, setError } = useError();
   const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
-    if (typeof accessToken === "string") {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setLoading(true);
 
-      api
-        .get("/teams", { accessToken })
-        .then((response) => setTeams(response.data))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    api
+      .get("/teams", { accessToken })
+      .then((response) => setTeams(response.data))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   }, [accessToken, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string") {
-      const handleSuccess = () => {
-        setSuccess(true);
-        void router.push("/people");
-      };
+    if (typeof accessToken !== "string") return;
 
-      event.preventDefault();
-      setLoading(true);
-      setError(null);
+    const handleSuccess = () => {
+      setSuccess(true);
+      navigate("/people");
+    };
 
-      const formData = new FormData(event.target as HTMLFormElement);
-      const o = Object.fromEntries(formData) as unknown as CreatePersonFormData;
-      const data: CreatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      api
-        .post("/people", { data, accessToken })
-        .then(() => handleSuccess())
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    const formData = new FormData(event.target as HTMLFormElement);
+    const o = Object.fromEntries(formData) as unknown as CreatePersonFormData;
+    const data: CreatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
+
+    api
+      .post("/people", { data, accessToken })
+      .then(() => handleSuccess())
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   };
 
   return (
     <>
-      <NextHead>
-        <title>Criar Pessoa | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/people">
+              <RouterLink to="/people">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">Criar Pessoa</div>
           </div>

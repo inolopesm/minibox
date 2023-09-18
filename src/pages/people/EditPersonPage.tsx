@@ -1,8 +1,6 @@
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
-import NextHead from "next/head";
-import NextLink from "next/link";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { SelectField } from "../../components/SelectField";
@@ -11,17 +9,7 @@ import { useAuthentication } from "../../hooks/useAuthentication";
 import { useError } from "../../hooks/useError";
 import { useSuccess } from "../../hooks/useSuccess";
 import { api } from "../../services/api";
-
-interface Team {
-  id: number;
-  name: string;
-}
-
-interface Person {
-  id: number;
-  name: string;
-  teamId: number;
-}
+import type { Person, Team } from "../../entities";
 
 interface UpdatePersonFormData {
   name: string;
@@ -33,9 +21,10 @@ interface UpdatePersonDTO {
   teamId: number;
 }
 
-export default function EditPersonPage() {
-  const router = useRouter();
-  const { accessToken } = useAuthentication(router);
+export function EditPersonPage() {
+  const navigate = useNavigate();
+  const { personId } = useParams() as { personId: string };
+  const { accessToken } = useAuthentication();
   const [person, setPerson] = useState<Person | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,62 +32,59 @@ export default function EditPersonPage() {
   const { success, setSuccess } = useSuccess();
 
   useEffect(() => {
-    if (typeof accessToken === "string" && router.isReady) {
-      setLoading(true);
+    if (typeof accessToken !== "string") return;
+    setLoading(true);
 
-      const handleSuccess = (
-        { data: pData }: { data: Person },
-        { data: tData }: { data: Team[] },
-      ) => {
-        setPerson(pData);
-        setTeams(tData);
-      };
+    const handleSuccess = (
+      { data: pData }: { data: Person },
+      { data: tData }: { data: Team[] },
+    ) => {
+      setPerson(pData);
+      setTeams(tData);
+    };
 
-      Promise.all([
-        api.get(`/people/${String(router.query.personId)}`, { accessToken }),
-        api.get("/teams", { accessToken }),
-      ])
-        .then(([pResponse, tResponse]) => handleSuccess(pResponse, tResponse))
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
-  }, [accessToken, router.isReady, router.query.personId, setError]);
+    Promise.all([
+      api.get(`/people/${personId}`, { accessToken }),
+      api.get("/teams", { accessToken }),
+    ])
+      .then(([pResponse, tResponse]) => handleSuccess(pResponse, tResponse))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [accessToken, personId, setError]);
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    if (typeof accessToken === "string" && person !== null) {
-      const handleSuccess = () => {
-        setSuccess(true);
-        void router.push("/people");
-      };
+    if (typeof accessToken !== "string") return;
+    if (person === null) return;
 
-      event.preventDefault();
-      setLoading(true);
-      setError(null);
+    const handleSuccess = () => {
+      setSuccess(true);
+      navigate("/people");
+    };
 
-      const formData = new FormData(event.target as HTMLFormElement);
-      const o = Object.fromEntries(formData) as unknown as UpdatePersonFormData;
-      const data: UpdatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
 
-      api
-        .put(`/people/${person.id}`, { data, accessToken })
-        .then(() => handleSuccess())
-        .catch((err) => setError(err))
-        .finally(() => setLoading(false));
-    }
+    const formData = new FormData(event.target as HTMLFormElement);
+    const o = Object.fromEntries(formData) as unknown as UpdatePersonFormData;
+    const data: UpdatePersonDTO = { name: o.name, teamId: Number(o.teamId) };
+
+    api
+      .put(`/people/${person.id}`, { data, accessToken })
+      .then(() => handleSuccess())
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   };
 
   return (
     <>
-      <NextHead>
-        <title>Editar Produto | Minibox</title>
-      </NextHead>
       <div className="bg-gray-100 min-h-screen px-4 py-10">
         <div className="bg-white border shadow rounded border-gray-200 p-6 max-w-xs mx-auto">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="secondary" asChild>
-              <NextLink href="/people">
+              <RouterLink to="/people">
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
-              </NextLink>
+              </RouterLink>
             </Button>
             <div className="font-bold text-gray-900 text-xl">
               Editar Produto
