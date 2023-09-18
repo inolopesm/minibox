@@ -50,7 +50,7 @@ export class HttpClient {
 
       return { data: body };
     } catch (error) {
-      if (error?.name === "AbortError") {
+      if (error instanceof Error && error.name === "AbortError") {
         throw new Error("Timeout error");
       }
 
