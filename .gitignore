@@ -1,6 +1,3 @@
 node_modules
-.next
+dist
 .env.local
-.swc
-coverage
-tsconfig.tsbuildinfo
