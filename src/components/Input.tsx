@@ -24,7 +24,7 @@ export type InputProps = Partial<
 export function Input({ onTextChange, ...props }: InputProps) {
   return (
     <input
-      className="border border-gray-300 bg-gray-50 rounded text-gray-900 text-sm w-full p-2.5 disabled:bg-gray-100"
+      className="border border-gray-300 bg-gray-50 rounded appearance-none text-gray-900 text-sm w-full p-2.5 disabled:bg-gray-100"
       onChange={onTextChange ? (e) => onTextChange(e.target.value) : undefined}
       {...props}
     />
