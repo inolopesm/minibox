@@ -37,8 +37,10 @@ export class HttpClient {
       clearTimeout(id);
 
       const contentType = response.headers.get("content-type");
+      const contentLength = response.headers.get("content-length");
       const json = !!contentType && contentType.includes("json");
-      const body = json ? await response.json() : null;
+      const size = contentLength ? Number(contentLength) : 0;
+      const body = json && size > 0 ? await response.json() : null;
 
       if (!response.ok) {
         if (body?.message) {
