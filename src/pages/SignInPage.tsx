@@ -80,12 +80,14 @@ export function SignInPage() {
               name="username"
               disabled={loading || success}
               autoCapitalize="off"
+              required
             />
             <TextField
               label="Senha"
               type="password"
               name="password"
               disabled={loading || success}
+              required
             />
             <Button type="submit" disabled={loading || success}>
               Entrar
