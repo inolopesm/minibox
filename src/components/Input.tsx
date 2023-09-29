@@ -16,6 +16,7 @@ export type InputProps = Partial<
     | "title"
     | "value"
     | "autoCapitalize"
+    | "inputMode"
   >
 > & {
   onTextChange?: (value: string) => void;
