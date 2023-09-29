@@ -66,6 +66,7 @@ export function ProductsPage() {
             placeholder="Cuscuz com Ovo"
             value={name}
             onTextChange={setName}
+            maxLength={48}
           />
 
           {!loading ? (
