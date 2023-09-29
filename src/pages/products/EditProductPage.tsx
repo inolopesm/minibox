@@ -96,9 +96,9 @@ export function EditProductPage() {
                   name="name"
                   disabled={loading || success}
                   maxLength={48}
-                  pattern="[A-zÀ-ú0-9][A-zÀ-ú0-9 ]{1,22}[A-zÀ-ú0-9]"
+                  pattern="[A-zÀ-ú0-9][A-zÀ-ú0-9 ]{1,46}[A-zÀ-ú0-9]"
                   placeholder="Cuscuz com Ovo"
-                  title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
+                  title="O nome é obrigatório e deve ser composto por até 48 caracteres sem espaço nas laterais"
                   defaultValue={product.name}
                   required
                 />
