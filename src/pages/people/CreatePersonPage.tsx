@@ -95,6 +95,7 @@ export function CreatePersonPage() {
               pattern="[A-zÀ-ú0-9][A-zÀ-ú0-9 ]{1,22}[A-zÀ-ú0-9]"
               placeholder="Fulano da Silva"
               title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
+              autoCapitalize="words"
               required
             />
             <SelectField label="Equipe" name="teamId" required>

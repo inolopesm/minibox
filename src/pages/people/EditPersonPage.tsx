@@ -86,9 +86,7 @@ export function EditPersonPage() {
                 <ArrowLeftIcon className="h-4 inline-block align-[-0.1875rem]" />
               </RouterLink>
             </Button>
-            <div className="font-bold text-gray-900 text-xl">
-              Editar Produto
-            </div>
+            <div className="font-bold text-gray-900 text-xl">Editar Pessoa</div>
           </div>
           <form className="grid gap-4" onSubmit={handleSubmit}>
             {error && (
@@ -98,7 +96,7 @@ export function EditPersonPage() {
             )}
             {success && (
               <Alert variant="success">
-                Produto editado com sucesso. Redirecionando para a listagem.
+                Pessoa editada com sucesso. Redirecionando para a listagem.
               </Alert>
             )}
             {person !== null && (
@@ -113,6 +111,7 @@ export function EditPersonPage() {
                   placeholder="Cuscuz com Ovo"
                   title="O nome é obrigatório e deve ser composto por até 24 caracteres sem espaço nas laterais"
                   defaultValue={person.name}
+                  autoCapitalize="words"
                   required
                 />
                 <SelectField label="Equipe" name="teamId" required>
