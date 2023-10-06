@@ -7,6 +7,8 @@ import { TextField } from "../components/TextField";
 import { useError } from "../hooks/useError";
 import { useSuccess } from "../hooks/useSuccess";
 import { api } from "../services/api";
+import { Typography } from "../components/Typography";
+import { Layout } from "../components/Layout";
 
 interface SignUpFormData {
   apiKey: string;
@@ -56,82 +58,68 @@ export function SignUpPage() {
   };
 
   return (
-    <>
-      <div className="bg-gray-100 min-h-screen px-4 py-10">
-        <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
-          <div className="font-bold mb-4 text-gray-900 text-xl">
-            Registre-se na plataforma
-          </div>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            {error && (
-              <Alert variant="error" onClose={() => setError(null)}>
-                {error.message}
-              </Alert>
-            )}
-            {success && (
-              <Alert variant="success">
-                Usuário cadastrado com sucesso. Redirecionando para acessar a
-                plataforma.
-              </Alert>
-            )}
-            <TextField
-              label="Chave secreta"
-              type="password"
-              name="apiKey"
-              disabled={loading || success}
-              title="A chave secreta é obrigatória"
-              helperText="Não possui? Contate o administrador"
-              autoCapitalize="off"
-              required
-            />
-            <TextField
-              label="Usuário"
-              type="text"
-              name="username"
-              disabled={loading || success}
-              maxLength={24}
-              pattern="[a-z]{1,24}"
-              placeholder="fulano"
-              title="O usuário é obrigatório e deve ser composto por até 24 letras minúsculas"
-              autoCapitalize="off"
-              required
-            />
-            <TextField
-              label="Senha"
-              type="password"
-              name="password"
-              disabled={loading || success}
-              minLength={6}
-              maxLength={24}
-              pattern="[A-Za-z0-9]{8,24}"
-              title="A senha é obrigatória e deve ser composta de 8 até 24 letras maiúsculas, minúsculas ou números"
-              autoCapitalize="off"
-              required
-            />
-            <TextField
-              label="Confirmação da senha"
-              type="password"
-              name="passwordConfirmation"
-              disabled={loading || success}
-              minLength={6}
-              maxLength={24}
-              pattern="[A-Za-z0-9]{8,24}"
-              title="A confirmação da senha é obrigatória e deve ser igual a senha informada acima"
-              autoCapitalize="off"
-              required
-            />
-            <Button type="submit" disabled={loading || success}>
-              Cadastrar
-            </Button>
-            <p className="text-center text-sm text-gray-900">
-              Já possui uma conta?{" "}
-              <Link asChild>
-                <RouterLink to="/signin">Entrar</RouterLink>
-              </Link>
-            </p>
-          </form>
-        </div>
-      </div>
-    </>
+    <Layout>
+      <Typography variant="heading" className="mb-4">
+        Registre-se na plataforma
+      </Typography>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        {error && (
+          <Alert variant="error" onClose={() => setError(null)}>
+            {error.message}
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success">
+            Usuário cadastrado com sucesso. Redirecionando para acessar a
+            plataforma.
+          </Alert>
+        )}
+        <TextField
+          label="Chave secreta"
+          type="password"
+          name="apiKey"
+          disabled={loading || success}
+          title="A chave secreta é obrigatória"
+          helperText="Não possui? Contate o administrador"
+          autoCapitalize="off"
+          required
+        />
+        <TextField
+          label="Usuário"
+          type="text"
+          name="username"
+          disabled={loading || success}
+          placeholder="fulano"
+          autoCapitalize="off"
+          required
+        />
+        <TextField
+          label="Senha"
+          type="password"
+          name="password"
+          disabled={loading || success}
+          autoCapitalize="off"
+          required
+          autoFocus
+        />
+        <TextField
+          label="Confirmação da senha"
+          type="password"
+          name="passwordConfirmation"
+          disabled={loading || success}
+          autoCapitalize="off"
+          required
+        />
+        <Button type="submit" disabled={loading || success}>
+          Cadastrar
+        </Button>
+        <Typography variant="body2" className="text-center">
+          Já possui uma conta?{" "}
+          <Link asChild>
+            <RouterLink to="/signin">Entrar</RouterLink>
+          </Link>
+        </Typography>
+      </form>
+    </Layout>
   );
 }

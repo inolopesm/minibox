@@ -8,6 +8,8 @@ import { useError } from "../hooks/useError";
 import { useSuccess } from "../hooks/useSuccess";
 import { api } from "../services/api";
 import { Cookie } from "../utils/Cookie";
+import { Typography } from "../components/Typography";
+import { Layout } from "../components/Layout";
 
 interface CreateSessionDTO {
   username: string;
@@ -57,50 +59,47 @@ export function SignInPage() {
   };
 
   return (
-    <>
-      <div className="bg-gray-100 min-h-screen px-4 py-10">
-        <div className="bg-white border border-gray-200 max-w-xs mx-auto p-6 rounded shadow">
-          <div className="font-bold mb-4 text-gray-900 text-xl">
-            Acesse a plataforma
-          </div>
-          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-            {error && (
-              <Alert variant="error" onClose={() => setError(null)}>
-                {error.message}
-              </Alert>
-            )}
-            {success && (
-              <Alert variant="success">
-                Login realizado com sucesso. Redirecionando para a plataforma.
-              </Alert>
-            )}
-            <TextField
-              label="Usuário"
-              type="text"
-              name="username"
-              disabled={loading || success}
-              autoCapitalize="off"
-              required
-            />
-            <TextField
-              label="Senha"
-              type="password"
-              name="password"
-              disabled={loading || success}
-              required
-            />
-            <Button type="submit" disabled={loading || success}>
-              Entrar
-            </Button>
-            <p className="text-center text-sm text-gray-900">
-              Ainda não possui uma conta?{" "}
-              <Link asChild>
-                <RouterLink to="/signup">Registre-se</RouterLink>
-              </Link>
-            </p>
-          </form>
-        </div>
-      </div>
-    </>
+    <Layout>
+      <Typography variant="heading" className="mb-4">
+        Acesse a plataforma
+      </Typography>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        {error && (
+          <Alert variant="error" onClose={() => setError(null)}>
+            {error.message}
+          </Alert>
+        )}
+        {success && (
+          <Alert variant="success">
+            Login realizado com sucesso. Redirecionando para a plataforma.
+          </Alert>
+        )}
+        <TextField
+          label="Usuário"
+          type="text"
+          name="username"
+          disabled={loading || success}
+          autoCapitalize="off"
+          required
+          autoFocus
+        />
+        <TextField
+          label="Senha"
+          type="password"
+          name="password"
+          disabled={loading || success}
+          required
+        />
+        <Button type="submit" disabled={loading || success}>
+          Entrar
+        </Button>
+        <Typography variant="body2" className="text-center">
+          Ainda não possui uma conta?{" "}
+          <Link asChild>
+            <RouterLink to="/signup">Registre-se</RouterLink>
+          </Link>
+        </Typography>
+      </form>
+    </Layout>
   );
 }
