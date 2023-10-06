@@ -17,6 +17,7 @@ export type InputProps = Partial<
     | "value"
     | "autoCapitalize"
     | "inputMode"
+    | "autoFocus"
   >
 > & {
   onTextChange?: (value: string) => void;
@@ -25,7 +26,7 @@ export type InputProps = Partial<
 export function Input({ onTextChange, ...props }: InputProps) {
   return (
     <input
-      className="border border-gray-300 bg-gray-50 rounded appearance-none text-gray-900 text-sm w-full p-2.5 disabled:bg-gray-100"
+      className="w-full appearance-none rounded border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 disabled:bg-gray-100"
       onChange={onTextChange ? (e) => onTextChange(e.target.value) : undefined}
       {...props}
     />
