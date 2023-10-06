@@ -15,18 +15,6 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "no-shadow": "error",
-    "@typescript-eslint/no-confusing-void-expression": [
-      "error",
-      {
-        "ignoreArrowShorthand": true
-      }
-    ],
-    "import/order": [
-      "error",
-      {
-        "alphabetize": { "order": "asc" },
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "object", "type"]
-      }
-    ]
+    "@typescript-eslint/no-confusing-void-expression": ["error", { "ignoreArrowShorthand": true }]
   }
 }
